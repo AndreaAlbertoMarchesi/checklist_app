@@ -10,12 +10,12 @@ https://flutter.dev/docs/development/data-and-backend/json
 @JsonSerializable(explicitToJson: true)
 class Task {
   String title;
-  List<Task> children;
+  List<Task> children = List<Task>();
   num percentage = 0;
 
-  static final Task emptyRoot = Task("root", <Task>[]);
+  static final Task emptyRoot = Task("root");
 
-  Task([this.title, this.children = const <Task>[]]);
+  Task(this.title,); //[this.children = const <Task>[]]);
 
   void updatePercentage() {
     percentage = 0;

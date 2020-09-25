@@ -9,11 +9,12 @@ part of 'Task.dart';
 Task _$TaskFromJson(Map<String, dynamic> json) {
   return Task(
     json['title'] as String,
-    (json['children'] as List)
+  )
+    ..children = (json['children'] as List)
         ?.map(
             (e) => e == null ? null : Task.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-  )..percentage = json['percentage'] as num;
+        ?.toList()
+    ..percentage = json['percentage'] as num;
 }
 
 Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{

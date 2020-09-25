@@ -1,32 +1,34 @@
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
-import 'package:checklist_app/view/task/TaskItem.dart';
+import 'package:checklist_app/view/tasks/ParentTaskItem.dart';
+import 'package:checklist_app/view/tasks/TaskPath.dart';
+import 'package:checklist_app/view/tasks/tasksList/TasksList.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
+  final Storage storage = Storage();
+
   @override
   HomeState createState() => HomeState();
 }
 
 class HomeState extends State<Home> {
-  HomeState();
-
-  Task root = Task("root", <Task>[]);
-  final Storage storage = Storage();
-  TaskItemState selection;
-
-  /*
-  root da fare come future, e poi usare il future builder per
-  fare la lista primaria
-   */
+  //sta roba fa cagare da fare coi futures!!
+  Task selectedTask;
+  Task root = Task.emptyRoot;
+  Task task = Task.emptyRoot;
+  List<Task> taskPath = List<Task>();
 
   @override
   void initState() {
     super.initState();
-    storage.readData().then((Task value) {
+    widget.storage.readData().then((Task value) {
       setState(() {
+        //sta roba fa cagare da fare coi futures!!
         root = value;
+        task = root;
+        taskPath.add(root);
       });
     });
   }
@@ -34,46 +36,67 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: GestureDetector(
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text("title"),
-          ),
-
-          //usare future builder
-
-          body: ListView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                TaskItem(root.children[index], _setSelection),
-            itemCount: root.children.length,
-          ),
-          floatingActionButton: AddButton(addTask),
-        ),
-        onTap: () {
-          if (selection != null) {
-            selection.deselect();
-            selection = null;
-          }
+      home: WillPopScope(
+        onWillPop: () async {
+          backToTask(taskPath[taskPath.length - 2]);
+          return false;
         },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Column(
+            children: [
+              TaskPath(taskPath, backToTask),
+              ParentTaskItem(task),
+              TasksList(task, openTask, refresh, selectTask),
+            ],
+          ),
+          floatingActionButton: AddButton(selectedTask, addTask, moveTask),
+        ),
       ),
     );
   }
 
-  void _setSelection(TaskItemState newSelection) {
+  //tutte ste robe da mettere nel controller
+
+  void selectTask(Task task){
     setState(() {
-      if (selection != null) selection.deselect();
-      selection = newSelection;
+      selectedTask = task;
     });
   }
 
-  void addTask() {
-    storage.writeData(root);
+  void refresh() {
+    setState(() {
+      task.updatePercentage();
+    });
+  }
 
-    if (selection != null)
-      selection.addTask();
-    else
-      setState(() {
-        root.children.add(Task());
-      });
+  void addTask(String title) {
+    setState(() {
+      task.children.add(Task(title));
+    });
+    widget.storage.writeData(root);
+  }
+
+  void backToTask(Task task) {
+    setState(() {
+      taskPath.removeRange(taskPath.indexOf(task) + 1, taskPath.length);
+      this.task = task;
+    });
+  }
+
+  void openTask(Task task) {
+    setState(() {
+      taskPath.add(task);
+      this.task = task;
+    });
+  }
+
+  void moveTask(){
+    setState(() {
+      task.children.add(selectedTask);
+      selectedTask = null;
+    });
+    //bisogna decidere se aggiungere il parent al model o beccarlo dal TasksPath
+    //poi qua si toglie il figlio dal parent mo si è duplicato
   }
 }

@@ -31,6 +31,7 @@ dependencies:
   shared_preferences:
   path_provider:
   percent_indicator:
+  reorderables:
 
 dev_dependencies:
   flutter_test:

@@ -22,7 +22,6 @@ class Storage {
       final file = await _localFile;
       if(file.existsSync()) {
         String content = await file.readAsString();
-        print("saved content: " + content);
         return Task.fromJson(jsonDecode(content));
       }
     } catch (e) {
