@@ -16,6 +16,7 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   //sta roba fa cagare da fare coi futures!!
   Task selectedTask;
+  List<Task> selectedTaskPath;
   Task root = Task.emptyRoot;
   Task task = Task.emptyRoot;
   List<Task> taskPath = List<Task>();
@@ -47,7 +48,7 @@ class HomeState extends State<Home> {
             children: [
               TaskPath(taskPath, backToTask),
               ParentTaskItem(task),
-              TasksList(task, openTask, updatePercentage, selectTask),
+              TasksList(task, openTask, updatePathPercentage, selectTask),
             ],
           ),
           floatingActionButton: AddButton(selectedTask, addTask, moveTask),
@@ -61,12 +62,13 @@ class HomeState extends State<Home> {
   void selectTask(Task task) {
     setState(() {
       selectedTask = task;
+      selectedTaskPath = List.from(taskPath);
     });
   }
 
-  void updatePercentage() {
+  void updatePathPercentage(List<Task> path) {
     setState(() {
-      taskPath.reversed.forEach((task) {
+      path.reversed.forEach((task) {
         task.updatePercentage();
       });
     });
@@ -96,10 +98,13 @@ class HomeState extends State<Home> {
 
   void moveTask() {
     setState(() {
+      selectedTaskPath.last.children.remove(selectedTask);
+      updatePathPercentage(selectedTaskPath);
+
       task.children.add(selectedTask);
+      updatePathPercentage(taskPath);
+
       selectedTask = null;
     });
-    //bisogna decidere se aggiungere il parent al model o beccarlo dal TasksPath
-    //poi qua si toglie il figlio dal parent mo si è duplicato
   }
 }
