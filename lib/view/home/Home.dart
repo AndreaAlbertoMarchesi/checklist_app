@@ -70,6 +70,7 @@ class HomeState extends State<Home> {
         task.updatePercentage();
       });
     });
+    widget.storage.writeData(root);
   }
 
   void addTask(String title) {
