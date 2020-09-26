@@ -47,7 +47,7 @@ class HomeState extends State<Home> {
             children: [
               TaskPath(taskPath, backToTask),
               ParentTaskItem(task),
-              TasksList(task, openTask, refresh, selectTask),
+              TasksList(task, openTask, updatePercentage, selectTask),
             ],
           ),
           floatingActionButton: AddButton(selectedTask, addTask, moveTask),
@@ -58,15 +58,17 @@ class HomeState extends State<Home> {
 
   //tutte ste robe da mettere nel controller
 
-  void selectTask(Task task){
+  void selectTask(Task task) {
     setState(() {
       selectedTask = task;
     });
   }
 
-  void refresh() {
+  void updatePercentage() {
     setState(() {
-      task.updatePercentage();
+      taskPath.reversed.forEach((task) {
+        task.updatePercentage();
+      });
     });
   }
 
@@ -91,7 +93,7 @@ class HomeState extends State<Home> {
     });
   }
 
-  void moveTask(){
+  void moveTask() {
     setState(() {
       task.children.add(selectedTask);
       selectedTask = null;

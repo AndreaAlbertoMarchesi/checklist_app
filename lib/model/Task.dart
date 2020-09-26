@@ -15,7 +15,7 @@ class Task {
 
   static final Task emptyRoot = Task("root");
 
-  Task(this.title,); //[this.children = const <Task>[]]);
+  Task(this.title);
 
   void updatePercentage() {
     percentage = 0;

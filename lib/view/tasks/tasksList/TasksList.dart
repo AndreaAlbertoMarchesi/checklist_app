@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'taskItem/TaskItem.dart';
 
 class TasksList extends StatelessWidget {
-  TasksList(this.task, this.openTask, this.refresh, this.selectTask);
+  TasksList(this.task, this.openTask, this.updatePercentage, this.selectTask);
 
   final Task task;
   //tutte ste funzie da riordinare mettendole dentro classe tipo TaskItemFunctions
   final Function openTask;
-  final Function refresh;
+  final Function updatePercentage;
   final Function selectTask;
 
   @override
@@ -20,7 +20,7 @@ class TasksList extends StatelessWidget {
       children: task.children.map((task) {
         return Container(
             key: PageStorageKey(task),
-            child: TaskItem(task, openTask, refresh, selectTask));
+            child: TaskItem(task, openTask, updatePercentage, selectTask));
       }).toList(),
     ));
   }

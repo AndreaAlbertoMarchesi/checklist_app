@@ -2,10 +2,10 @@ import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 
 class CheckboxRow extends StatelessWidget {
-  CheckboxRow(this.task, this.refreshParent);
+  CheckboxRow(this.task, this.updatePercentage);
 
   final Task task;
-  final Function refreshParent;
+  final Function updatePercentage;
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -22,7 +22,7 @@ class CheckboxRow extends StatelessWidget {
                 else
                   task.percentage = 0;
 
-                refreshParent();
+                updatePercentage();
             },
           ),
         ],
