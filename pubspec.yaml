@@ -32,6 +32,8 @@ dependencies:
   path_provider:
   percent_indicator:
   reorderables:
+  swipe_to: 0.0.1+3
+  vibration: ^1.5.0
 
 dev_dependencies:
   flutter_test:

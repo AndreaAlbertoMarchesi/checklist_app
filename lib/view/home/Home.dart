@@ -42,12 +42,15 @@ class HomeState extends State<Home> {
           return false;
         },
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            title: TaskPath(taskPath, backToTask),
+          ),
           body: Column(
             children: [
-              TaskPath(taskPath, backToTask),
+              ///ho spostato il path sulla appbar
+              //TaskPath(taskPath, backToTask),
               ParentTaskItem(task),
-              TasksList(task, openTask, refresh, selectTask),
+              TasksList(task, openTask, refresh, selectTask, handleReorder),
             ],
           ),
           floatingActionButton: AddButton(selectedTask, addTask, moveTask),
@@ -99,4 +102,12 @@ class HomeState extends State<Home> {
     //bisogna decidere se aggiungere il parent al model o beccarlo dal TasksPath
     //poi qua si toglie il figlio dal parent mo si è duplicato
   }
+
+  void handleReorder(int oldIndex, int newIndex) {
+    setState(() {
+      task.handleReorder(oldIndex,newIndex);
+    });
+    widget.storage.writeData(root);
+  }
+
 }
