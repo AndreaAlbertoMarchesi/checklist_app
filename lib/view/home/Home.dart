@@ -48,7 +48,7 @@ class HomeState extends State<Home> {
             children: [
               TaskPath(taskPath, backToTask),
               ParentTaskItem(task),
-              TasksList(task, openTask, updatePathPercentage, selectTask),
+              TasksList(task, openTask, updateTaskPathPercentage, selectTask),
             ],
           ),
           floatingActionButton: AddButton(selectedTask, addTask, moveTask),
@@ -66,9 +66,18 @@ class HomeState extends State<Home> {
     });
   }
 
-  void updatePathPercentage(List<Task> path) {
+  void updateSelectedTaskPathPercentage() {
     setState(() {
-      path.reversed.forEach((task) {
+      selectedTaskPath.reversed.forEach((task) {
+        task.updatePercentage();
+      });
+    });
+    widget.storage.writeData(root);
+  }
+
+  void updateTaskPathPercentage() {
+    setState(() {
+      taskPath.reversed.forEach((task) {
         task.updatePercentage();
       });
     });
@@ -99,10 +108,10 @@ class HomeState extends State<Home> {
   void moveTask() {
     setState(() {
       selectedTaskPath.last.children.remove(selectedTask);
-      updatePathPercentage(selectedTaskPath);
+      updateSelectedTaskPathPercentage();
 
       task.children.add(selectedTask);
-      updatePathPercentage(taskPath);
+      updateTaskPathPercentage();
 
       selectedTask = null;
     });
