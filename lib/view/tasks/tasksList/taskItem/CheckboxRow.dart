@@ -1,13 +1,16 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CheckboxRow extends StatelessWidget {
-  CheckboxRow(this.task, this.updatePercentage);
+  CheckboxRow(this.task);
 
   final Task task;
-  final Function updatePercentage;
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: 50),
       child: Row(
@@ -22,7 +25,7 @@ class CheckboxRow extends StatelessWidget {
                 else
                   task.percentage = 0;
 
-                updatePercentage();
+                appState.updateTaskPathPercentage();
             },
           ),
         ],

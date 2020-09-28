@@ -1,15 +1,15 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
+import 'package:provider/provider.dart';
 
 class AddDialog extends StatelessWidget {
-  AddDialog(this.addTask);
-
-  final Function addTask;
-
   final textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     Widget doneButton = FlatButton(
       child: Text("Back"),
       onPressed: () {
@@ -22,7 +22,7 @@ class AddDialog extends StatelessWidget {
       child: Text("Add"),
       onPressed: () {
         if (textController.text != "") {
-          addTask(textController.text);
+          appState.addTask(textController.text);
           Navigator.of(context).pop();
         } else {
           Vibration.vibrate(duration: 100);

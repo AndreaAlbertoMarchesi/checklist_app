@@ -1,14 +1,15 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class ParentTaskItem extends StatelessWidget {
-  ParentTaskItem(this.task);
-
-  final Task task;
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Padding(
       padding: EdgeInsets.all(7),
       child: Container(
@@ -24,7 +25,7 @@ class ParentTaskItem extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: Text(
-                task.title,
+                appState.task.title,
                 style: TextStyle(
                   fontSize: 60.0,
                   letterSpacing: 0.5,
@@ -39,8 +40,8 @@ class ParentTaskItem extends StatelessWidget {
               child: CircularPercentIndicator(
                 radius: 35.0,
                 lineWidth: 8.0,
-                percent: task.percentage.toDouble(),
-                center: new Text((task.percentage * 100).toInt().toString() + "%"),
+                percent: appState.task.percentage.toDouble(),
+                center: new Text((appState.task.percentage * 100).toInt().toString() + "%"),
                 progressColor: Colors.green,
               ),
             ),

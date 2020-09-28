@@ -1,7 +1,9 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:provider/provider.dart';
 
 class PercentageRow extends StatelessWidget {
   PercentageRow(this.task);
@@ -10,6 +12,8 @@ class PercentageRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return SwipeTo(
       swipeDirection: SwipeDirection.swipeToLeft,
       endOffset: Offset(-0.6, 0.0),
@@ -59,7 +63,8 @@ class PercentageRow extends StatelessWidget {
                   lineWidth: 8.0,
                   percent: task.percentage.toDouble(),
                   center: new Text(
-                      (task.percentage * 100).toInt().toString() + "%"),
+                      (task.percentage * 100).toInt().toString() +
+                          "%"),
                   progressColor: Colors.green,
                 ),
               ),

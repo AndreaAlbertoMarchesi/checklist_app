@@ -1,26 +1,22 @@
-import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/model/AppState.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'taskItem/TaskItem.dart';
 
 class TasksList extends StatelessWidget {
-  TasksList(this.task, this.openTask, this.updatePercentage, this.selectTask);
-
-  final Task task;
-  //tutte ste funzie da riordinare mettendole dentro classe tipo TaskItemFunctions
-  final Function openTask;
-  final Function updatePercentage;
-  final Function selectTask;
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Expanded(
         child: ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {},
-      children: task.children.map((task) {
+      children: appState.task.children.map((task) {
         return Container(
             key: PageStorageKey(task),
-            child: TaskItem(task, openTask, updatePercentage, selectTask));
+            child: TaskItem(task));
       }).toList(),
     ));
   }

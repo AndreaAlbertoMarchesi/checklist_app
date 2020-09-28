@@ -1,20 +1,16 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'AddDialog.dart';
 
 class AddButton extends StatelessWidget {
-  AddButton(this.selectedTask, this.addTask, this.moveTask);
-
-
-  final Task selectedTask;
-  final Function addTask;
-  final Function moveTask;
-
-
   @override
   Widget build(BuildContext context) {
-    if(selectedTask == null)
+    final appState = context.watch<AppState>();
+
+    if(appState.selectedTask == null)
       return FloatingActionButton(
         onPressed: () {
           openAddDialog(context);
@@ -24,7 +20,7 @@ class AddButton extends StatelessWidget {
       );
     else
       return FloatingActionButton(
-        onPressed: moveTask,
+        onPressed: appState.moveTask,
         child: Icon(Icons.drive_file_move),
         backgroundColor: Colors.green,
       );
@@ -34,7 +30,7 @@ class AddButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddDialog(addTask);
+        return AddDialog();
       },
     );
   }

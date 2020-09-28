@@ -1,54 +1,42 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 
 import 'CheckboxRow.dart';
 import 'PercentageRow.dart';
+import 'package:provider/provider.dart';
 
 class TaskItem extends StatefulWidget {
-  const TaskItem(this.task, this.openTask, this.refresh, this.selectTask);
-
+  TaskItem(this.task);
   final Task task;
-  //tutte ste funzie da riordinare mettendole dentro classe tipo TaskItemFunctions
-  final Function openTask;
-  final Function refresh;
-  final Function selectTask;
 
   @override
-  TaskItemState createState() => TaskItemState(task);
+  TaskItemState createState() => TaskItemState();
 }
 
 class TaskItemState extends State<TaskItem> {
-  TaskItemState(this.task);
-
   bool selected = false;
-  Task task;
 
   @override
   Widget build(BuildContext context) {
-    return _buildTiles(/*widget.task*/);
-  }
-
-  //I due widget da fare probabilmente con ereditarietà
-
-  Widget _buildTiles() {
-
+    final appState = context.watch<AppState>();
     return InkWell(
-      child: Card(
-        margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
-        child: getCardContent(task, widget.refresh),
-      ),
-      onTap: () {
-        widget.openTask(task);
-      },
-      onDoubleTap: (){
-        widget.selectTask(task);
-      },
-    );
-  }
+        child: Card(
+          margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: getCardContent(widget.task, appState.updateTaskPathPercentage),
+        ),
+        onTap: () {
+          appState.openTask(widget.task);
+        },
+        onDoubleTap: () {
+          appState.selectTask(widget.task);
+        },
+      );
+    }
 
   Widget getCardContent(Task task, Function refresh) {
     if (task.children.isEmpty)
-      return CheckboxRow(task, refresh);
+      return CheckboxRow(task);
     else
       return PercentageRow(task);
   }
