@@ -1,6 +1,7 @@
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
+import 'package:checklist_app/view/home/SideMenu.dart';
 import 'package:checklist_app/view/tasks/ParentTaskItem.dart';
 import 'package:checklist_app/view/tasks/TaskPath.dart';
 import 'package:checklist_app/view/tasks/tasksList/TasksList.dart';
@@ -35,6 +36,7 @@ class HomeState extends State<Home> {
               TasksList(),
             ],
           ),
+          drawer: SideMenu(),
           floatingActionButton: AddButton(),
         ),
       ),

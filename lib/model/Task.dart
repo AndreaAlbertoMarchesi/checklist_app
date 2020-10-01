@@ -13,7 +13,7 @@ class Task {
   List<Task> children = List<Task>();
   num percentage = 0;
 
-  static final Task emptyRoot = Task("root");
+  static final Task emptyRoot = Task("⌂");
 
   Task(this.title);
 
