@@ -1,5 +1,4 @@
 import 'package:checklist_app/model/AppState.dart';
-import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';

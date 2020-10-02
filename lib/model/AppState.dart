@@ -51,6 +51,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void deleteTask(Task task, Task parent){
+    parent.children.remove(task);
+    updateTaskPathPercentage();
+    storage.writeData(root);
+    notifyListeners();
+  }
+
   void backToTask(Task task) {
     taskPath.removeRange(taskPath.indexOf(task) + 1, taskPath.length);
     this.task = task;
