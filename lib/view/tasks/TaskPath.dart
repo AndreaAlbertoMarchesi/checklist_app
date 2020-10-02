@@ -1,5 +1,4 @@
 import 'package:checklist_app/model/AppState.dart';
-import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,31 +13,8 @@ class TaskPath extends StatelessWidget {
     if (appState.taskPath.length > 1) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: PopupMenuButton(
-            elevation: 3.2,
-            icon: Icon(Icons.arrow_back),
-            onSelected: (task) {
-              appState.backToTask(task);
-            },
-            onCanceled: () {
-              print('You have not chossed anything');
-            },
-            tooltip: 'Path',
-            itemBuilder: (BuildContext context) {
-              return appState.taskPath
-                  .map((Task choice) {
-                    return PopupMenuItem(
-                      value: choice,
-                      child: Text(choice.title),
-                    );
-                  })
-                  .toList()
-                  .sublist(0, appState.taskPath.length - 1);
-            }),
-
-        ///alternativa con il path stampato interamente sulla appbar
-        /* Row(
-        children: widget.taskPath.map((task) {
+        child: Row(
+        children: appState.taskPath.map((task) {
           return InkWell(
             child: Row(children: [
               Padding(
@@ -64,11 +40,11 @@ class TaskPath extends StatelessWidget {
               )
             ]),
             onTap: () {
-              widget.backToTask(task);
+              appState.backToTask(task);
             },
           );
         }).toList(),
-      ),*/
+      ),
       );
     } else {
       return Text("Home");
