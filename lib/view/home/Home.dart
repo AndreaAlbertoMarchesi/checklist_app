@@ -52,7 +52,8 @@ class HomeState extends State<Home> {
             ],
           ),
           drawer: SideMenu(),
-          floatingActionButton: AddButton(),
+          //floatingActionButton: AddButton(),
+          bottomNavigationBar: AddButton(),
         ),
       ),
     );

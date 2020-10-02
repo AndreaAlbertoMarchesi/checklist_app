@@ -28,6 +28,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void unDoSelection(){
+    selectedTask = null;
+    notifyListeners();
+  }
+
+
   void updateSelectedTaskPathPercentage() {
     selectedTaskPath.reversed.forEach((task) {
       task.updatePercentage();
