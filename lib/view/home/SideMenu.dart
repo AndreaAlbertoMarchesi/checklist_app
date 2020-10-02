@@ -1,4 +1,5 @@
 
+import 'package:checklist_app/view/Settings/SettingsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +30,9 @@ class SideMenu extends StatelessWidget {
           ),
           ListTile(
             title: Text('Settings'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context,  MaterialPageRoute(builder: (context) => SettingsPage()));
+            },
           ),
           ListTile(
             title: Text('Help'),

@@ -28,7 +28,16 @@ class HomeState extends State<Home> {
           return false;
         },
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: (){
+
+                  }
+              )
+            ],
+          ),
           body: Column(
             children: [
               TaskPath(),
