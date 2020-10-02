@@ -34,7 +34,6 @@ class TaskPath extends StatelessWidget {
                   .sublist(0, appState.taskPath.length - 1);
             }),*/
       Container(
-        color: Colors.blue[50],
         constraints: BoxConstraints.tightForFinite(height: 40),
         child: Row(
           children: appState.taskPath.map((task) {

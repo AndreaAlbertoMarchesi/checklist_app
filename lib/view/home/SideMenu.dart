@@ -1,13 +1,15 @@
 
+import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/Settings/SettingsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print("ciao");
+    final appState = context.watch<AppState>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -26,7 +28,10 @@ class SideMenu extends StatelessWidget {
           ),
           ListTile(
             title: Text("Home"),
-            onTap: (){},
+            onTap: (){
+              appState.backToRoot();
+              Navigator.of(context).pop();
+            },
           ),
           ListTile(
             title: Text('Settings'),

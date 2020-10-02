@@ -71,6 +71,12 @@ class AppState extends ChangeNotifier {
       notifyListeners();
     }
   }
+  void backToRoot(){
+    taskPath.clear();
+    taskPath.add(root);
+    this.task = root;
+    notifyListeners();
+  }
 
   void openTask(Task task) {
     taskPath.add(task);

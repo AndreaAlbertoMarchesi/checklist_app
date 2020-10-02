@@ -23,6 +23,7 @@ class HomeState extends State<Home> {
     final appState = context.watch<AppState>();
 
     return MaterialApp(
+      theme: ThemeData.light(),
       home: WillPopScope(
         onWillPop: () async {
           appState.backToPreviousTask();
