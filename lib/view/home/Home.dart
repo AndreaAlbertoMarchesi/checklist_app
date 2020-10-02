@@ -1,3 +1,4 @@
+import 'package:checklist_app/controller/Search.dart';
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
@@ -30,11 +31,15 @@ class HomeState extends State<Home> {
         child: Scaffold(
           appBar: AppBar(
             actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: (){
-
-                  }
+              Builder(
+                builder:(context) => IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: (){
+                      showSearch(context: context, delegate: Search(
+                          appState.titles)
+                      );
+                    }
+                ),
               )
             ],
           ),

@@ -10,6 +10,8 @@ class AppState extends ChangeNotifier {
   Task root = Task.emptyRoot;
   Task task = Task.emptyRoot;
   List<Task> taskPath = List<Task>();
+  //non è molto elegante ma provo così
+  List<String> titles=[];
 
   AppState() {
     storage.readData().then((Task value) {
@@ -44,6 +46,7 @@ class AppState extends ChangeNotifier {
 
   void addTask(String title) {
     task.children.add(Task(title));
+    titles.add(title);
     storage.writeData(root);
     notifyListeners();
   }
