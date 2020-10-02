@@ -19,12 +19,6 @@ class _SettingsPageState extends State<SettingsPage> {
           CircleAvatar(
           ),
           Text("nome.cognome@mail.com"),
-          ListView(
-            children: [
-              Text("data"),
-              Text("data"),
-            ],
-          )
         ],
       ),
     );

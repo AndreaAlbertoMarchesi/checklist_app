@@ -5,49 +5,59 @@ import 'package:provider/provider.dart';
 
 
 class TaskPath extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    if (appState.taskPath.length > 1) {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child:
+      /*PopupMenuButton(
+            elevation: 3.2,
+            icon: Icon(Icons.arrow_back),
+            onSelected: (task) {
+              appState.backToTask(task);
+            },
+            onCanceled: () {
+              print('You have not chossed anything');
+            },
+            tooltip: 'Path',
+            itemBuilder: (BuildContext context) {
+              return appState.taskPath
+                  .map((Task choice) {
+                    return PopupMenuItem(
+                      value: choice,
+                      child: Text(choice.title),
+                    );
+                  })
+                  .toList()
+                  .sublist(0, appState.taskPath.length - 1);
+            }),*/
+      Container(
+        color: Colors.blue[50],
+        constraints: BoxConstraints.tightForFinite(height: 40),
         child: Row(
-        children: appState.taskPath.map((task) {
-          return InkWell(
-            child: Row(children: [
-              Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "⧐",
-                    style: TextStyle(fontSize: 30),
-                  )),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.blue[100],
-                    border: Border.all(
-                      color: Colors.blue[200],
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Padding(
+          children: appState.taskPath.map((task) {
+            return InkWell(
+              child: Row(children: [
+                Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Icon(Icons.arrow_forward_ios_rounded)),
+                Padding(
                   padding: EdgeInsets.all(5.0),
                   child: Text(
                     task.title,
                     style: TextStyle(fontSize: 20),
                   ),
-                ),
-              )
-            ]),
-            onTap: () {
-              appState.backToTask(task);
-            },
-          );
-        }).toList(),
+                )
+              ]),
+              onTap: () {
+                appState.backToTask(task);
+              },
+            );
+          }).toList().sublist(0, appState.taskPath.length),
+        ),
       ),
-      );
-    } else {
-      return Text("Home");
-    }
+    );
   }
 }
