@@ -1,13 +1,12 @@
+import 'package:checklist_app/model/AppState.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Search extends SearchDelegate{
 
   String selectedResult;
-  final List<String> titles;
+  List<String> titles=[];
   List<String> recentList=[];
-  Search(this.titles);
-
-
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -42,6 +41,9 @@ class Search extends SearchDelegate{
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    final appState = context.watch<AppState>();
+    titles = appState.getTitles();
+
     List<String> suggestionList = [];
     query.isEmpty
         ? suggestionList = recentList
@@ -55,6 +57,10 @@ class Search extends SearchDelegate{
           title: Text(
             suggestionList[index],
           ),
+          onTap: (){
+            appState.goToTask(suggestionList[index]);
+            Navigator.of(context).pop();
+          },
         );
       }
     );

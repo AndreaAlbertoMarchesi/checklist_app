@@ -22,7 +22,7 @@ class AddButton extends StatelessWidget {
                       openAddDialog(context);
                     },
                     child: Icon(Icons.add),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.greenAccent[400],
                   ),
                 ),
               ],
@@ -41,7 +41,7 @@ class AddButton extends StatelessWidget {
                   child: FloatingActionButton(
                     onPressed: appState.moveTask,
                     child: Icon(Icons.drive_file_move),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.greenAccent[400],
                   ),
                 ),
                 Align(

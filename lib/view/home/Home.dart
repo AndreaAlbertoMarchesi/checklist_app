@@ -36,12 +36,18 @@ class HomeState extends State<Home> {
                 builder:(context) => IconButton(
                     icon: Icon(Icons.search),
                     onPressed: (){
-                      showSearch(context: context, delegate: Search(
-                          appState.titles)
-                      );
+                      showSearch(context: context, delegate: Search());
                     }
                 ),
-              )
+              ),
+              Builder(
+                builder:(context) => IconButton(
+                    icon: Icon(Icons.notifications_active_outlined),
+                    onPressed: (){
+
+                    }
+                ),
+              ),
             ],
           ),
           body: Column(

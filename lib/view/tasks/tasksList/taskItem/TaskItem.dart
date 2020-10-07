@@ -32,6 +32,7 @@ class TaskItemState extends State<TaskItem> {
             deleteDialog(appState);
           },
           child: Card(
+            color: getColor(),
             margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: getCardContent(widget.task, appState.updateTaskPathPercentage),
           ),
@@ -40,10 +41,21 @@ class TaskItemState extends State<TaskItem> {
           appState.openTask(widget.task);
         },
         onDoubleTap: () {
+          setState(() {
+            selected = true;
+          });
           appState.selectTask(widget.task);
         },
       );
     }
+
+  Color getColor() {
+    if (selected) {
+      return Colors.lightGreenAccent[100];
+    } else {
+      return Colors.white;
+    }
+  }
 
   Widget getCardContent(Task task, Function refresh) {
     if (task.children.isEmpty)
@@ -51,6 +63,7 @@ class TaskItemState extends State<TaskItem> {
     else
       return PercentageRow(task);
   }
+
   void deleteDialog(appState){
     showDialog(
       context: context,

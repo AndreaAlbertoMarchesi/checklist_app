@@ -1,4 +1,5 @@
 import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -40,14 +41,23 @@ class ParentTaskItem extends StatelessWidget {
                 radius: 35.0,
                 lineWidth: 8.0,
                 percent: appState.task.percentage.toDouble(),
-                center: new Text((appState.task.percentage * 100).toInt().toString() + "%"),
-                progressColor: Colors.green,
+                center: isCompleted(appState.task, appState.task.percentage.toDouble()),
+                progressColor: Colors.greenAccent[400],
               ),
             ),
-
           ],
         ),
       ),
     );
   }
+
+  Widget isCompleted(Task task, num percentage){
+    if((percentage*100) == 100.0){
+      return Image.asset('images/completeIcon.png');
+    }else
+      return Text(
+          (task.percentage * 100).toInt().toString() +
+              "%");
+  }
+
 }

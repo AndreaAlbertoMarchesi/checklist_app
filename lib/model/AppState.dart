@@ -10,8 +10,11 @@ class AppState extends ChangeNotifier {
   Task root = Task.emptyRoot;
   Task task = Task.emptyRoot;
   List<Task> taskPath = List<Task>();
-  //non è molto elegante ma provo così
-  List<String> titles=[];
+
+  ///da migliorare => inseriti per il poter selezionare più di un elemento da spostare
+  List<Task> selectedTasks = [];
+  List<Task> lastTaskPath;
+
 
   AppState() {
     storage.readData().then((Task value) {
@@ -23,8 +26,23 @@ class AppState extends ChangeNotifier {
   }
 
   void selectTask(Task task) {
-    selectedTask = task;
-    selectedTaskPath = List.from(taskPath);
+
+    if(selectedTask == null) {
+      selectedTask = task;
+      selectedTasks.add(selectedTask);
+      selectedTaskPath = List.from(taskPath);
+      lastTaskPath = selectedTaskPath.toList().sublist(0,selectedTaskPath.length-1);
+    }else {
+      selectedTaskPath = List.from(taskPath).sublist(0,taskPath.length-1);
+      if(selectedTaskPath == lastTaskPath){
+        selectedTasks.add(task);
+      }else {
+        selectedTask = task;
+        selectedTaskPath = List.from(taskPath);
+        lastTaskPath = selectedTaskPath;
+        selectedTasks.clear();
+      }
+    }
     notifyListeners();
   }
 
@@ -51,14 +69,24 @@ class AppState extends ChangeNotifier {
   }
 
   void addTask(String title) {
-    task.children.add(Task(title));
-    titles.add(title);
+    /*List<Task> taskPathToMemorize = new List<Task>();
+    taskPathToMemorize.addAll(taskPath);
+    Task taskToMemorize =Task(title);
+    taskPathToMemorize.add(Task(title));
+
+    taskToMemorize.setTaskPathToMemorize(encode(taskPathToMemorize));
+    task.children.add(taskToMemorize);
+    mapOfTask.putIfAbsent(title, () => taskToMemorize);
+
+    print(taskPath.map((e) => e.title).toString());
+*/
     storage.writeData(root);
     notifyListeners();
   }
 
   void deleteTask(Task task, Task parent){
     parent.children.remove(task);
+    ///mapOfTask.remove(task.title);
     updateTaskPathPercentage();
     storage.writeData(root);
     notifyListeners();
@@ -89,7 +117,6 @@ class AppState extends ChangeNotifier {
     this.task = task;
     notifyListeners();
   }
-
   void moveTask() {
     selectedTaskPath.last.children.remove(selectedTask);
     updateSelectedTaskPathPercentage();
@@ -97,8 +124,74 @@ class AppState extends ChangeNotifier {
     task.children.add(selectedTask);
     updateTaskPathPercentage();
 
+    /*List<Task> taskPathToMemorize = new List<Task>();
+    taskPathToMemorize.addAll(taskPath);
+    taskPathToMemorize.add(selectedTask);
+
+    selectedTask.setTaskPathToMemorize(encode(taskPathToMemorize));*/
     selectedTask = null;
 
     notifyListeners();
   }
+/*
+
+  void goToTask(String title){
+
+    List<dynamic> pathConverted;
+
+    String pathWanted = mapOfTask['$title'].taskPathToMemorize;
+    pathConverted = decode(pathWanted);
+    createPath(pathConverted);
+
+    print(pathWanted);
+  }
+
+  Task getTaskFromTitle(String title){
+    return mapOfTask['$title'];
+  }
+
+  String encode(List<Task> toEncode){
+    List<String> titles = toEncode.map((e) => e.title).toList();
+    String encoded="";
+    for(String title in titles ){
+      encoded = encoded + "$title£";
+    }
+    return encoded;
+  }
+
+  List<String> decode(String toDecode){
+    List<String> titles=[];
+    String title = "";
+    for(int i=0; i < toDecode.length; i++  ){
+      int j;
+      for(j = i; toDecode[j] != "£"; j++){
+        title = title + toDecode[j];
+      }
+      i = j;
+      titles.add(title);
+      title = "";
+    }
+    return titles;
+  }
+
+  void createPath(List<String> titles) {
+    titles= titles.sublist(1,titles.length);
+    taskPath.clear();
+    taskPath.add(root);
+    task = root;
+    for(String title in titles){
+      task = task.children.firstWhere((element) => element.title == title);
+      taskPath.add(task);
+    }
+    notifyListeners();
+  }
+  //used to suggestionlist
+  List<String> fillTitles(){
+    List<String> titles=[];
+    mapOfTask.forEach((key, value) { titles.add(value.title); });
+    return titles;
+  }
+
+*/
+
 }
