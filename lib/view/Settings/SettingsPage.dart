@@ -1,4 +1,5 @@
 
+import 'package:checklist_app/view/authentication/Authenticate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -56,8 +57,14 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            title: Center(child: Text("Account")),
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
+            },
+          ),
+          ListTile(
             title: Center(child: Text("Terms & Conditions")),
-            subtitle: Center(child: Text("Read to know more about terms and conditions")),
+            subtitle: Center(child: Text("Click to know more about terms and conditions")),
             onTap: (){
 
             },

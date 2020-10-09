@@ -20,18 +20,14 @@ class _SignInState extends State<SignIn> {
   String error = '';
   bool loading = false;
 
-  // text field state
   String email = '';
   String password = '';
 
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
-      backgroundColor: Colors.brown[100],
       appBar: AppBar(
-        backgroundColor: Colors.brown[400],
-        elevation: 0.0,
-        title: Text('Sign in to Brew Crew'),
+        title: Text('Sign in with your credentials'),
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
@@ -49,12 +45,12 @@ class _SignInState extends State<SignIn> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: "email",
-                  fillColor: Colors.white,
+                  hintText: "email",
+                  fillColor: Colors.cyan[100],
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.pink, width: 2.0),
@@ -69,12 +65,12 @@ class _SignInState extends State<SignIn> {
               TextFormField(
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: "password",
-                  fillColor: Colors.white,
+                  hintText: "password",
+                  fillColor: Colors.cyan[100],
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2.0),
+                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.pink, width: 2.0),
