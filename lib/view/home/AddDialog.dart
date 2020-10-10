@@ -3,58 +3,65 @@ import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'package:provider/provider.dart';
 
+
 class AddDialog extends StatelessWidget {
-  final textController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
+
+    final _formKey = GlobalKey<FormState>();
     final appState = context.watch<AppState>();
+    String taskName = '';
 
-    Widget doneButton = FlatButton(
-      child: Text("Back"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
+    Widget doneButton(context) {
+      return FlatButton(
+        child: Text("Back"),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      );
+    }
 
-    ///ho usato la vibrazione come errore
-    Widget addButton = FlatButton(
-      child: Text("Add"),
-      onPressed: () {
-        if (textController.text != "") {
-          appState.addTask(textController.text);
-          Navigator.of(context).pop();
-        } else {
-          Vibration.vibrate(duration: 100);
-        }
-
-      },
-    );
-
-    ///volevo aggiungere un messaggio di errore per distinguere i casi ma non sono riuscita
-    ///l'unica cosa che mi è venuta pensata è farlo diventare statefull
-    InputDecoration isWrong(){
-      if(textController.text == ""){
-        return InputDecoration(
-          hintText: "Enter a task name" ,
-        );
-      }else{
-        return InputDecoration(
-          hintText: "Enter a task name"
-        );
-      }
-
+    Widget addButton(context) {
+      return FlatButton(
+        child: Text("Add"),
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+            appState.addTask(taskName);
+            Navigator.of(context).pop();
+          } else {
+            Vibration.vibrate(duration: 100);
+          }
+        },
+      );
     }
 
     return AlertDialog(
-      title: Text("Add tasks"),
-      content: TextField(
-        controller: textController,
-        decoration: isWrong(),
+      title: Form(
+        key: _formKey,
+        child: TextFormField(
+          decoration: InputDecoration(
+            hintText: "Add a Task",
+            filled: true,
+            contentPadding: EdgeInsets.all(12.0),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.cyan[400], width: 2.0),
+            ),
+          ),
+          validator: (val) => val.isEmpty ? 'Enter a valid name' : null,
+          onChanged: (val) {
+           taskName = val;
+          },
+        ),
       ),
       actions: [
-        doneButton,
-        addButton,
+        doneButton(context),
+        addButton(context),
       ],
     );
   }

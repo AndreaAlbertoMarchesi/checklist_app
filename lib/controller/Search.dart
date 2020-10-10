@@ -42,7 +42,7 @@ class Search extends SearchDelegate{
   @override
   Widget buildSuggestions(BuildContext context) {
     final appState = context.watch<AppState>();
-    titles = appState.getTitles();
+    ///titles = appState.getTitles();
 
     List<String> suggestionList = [];
     query.isEmpty
@@ -58,7 +58,7 @@ class Search extends SearchDelegate{
             suggestionList[index],
           ),
           onTap: (){
-            appState.goToTask(suggestionList[index]);
+            ///appState.goToTask(suggestionList[index]);
             Navigator.of(context).pop();
           },
         );
