@@ -5,15 +5,12 @@ import 'Task.dart';
 
 class AppState extends ChangeNotifier {
   Storage storage = Storage();
-  Task selectedTask;
-  List<Task> selectedTaskPath;
   Task root = Task.emptyRoot;
   Task task = Task.emptyRoot;
   List<Task> taskPath = List<Task>();
 
-  ///da migliorare => inseriti per il poter selezionare più di un elemento da spostare
-  List<Task> selectedTasks = [];
-  List<Task> lastTaskPath;
+  List<Task> selectedListOfTasks = [];
+  List<List<Task>> selectedListOfTasksPath = [];
 
   AppState() {
     storage.readData().then((Task value) {
@@ -25,41 +22,24 @@ class AppState extends ChangeNotifier {
   }
 
   void selectTask(Task task) {
-    if (selectedTask == null) {
-      selectedTask = task;
-      selectedTasks.add(selectedTask);
-      selectedTaskPath = List.from(taskPath);
-      lastTaskPath =
-          selectedTaskPath.toList().sublist(0, selectedTaskPath.length - 1);
-    } else {
-      selectedTaskPath = List.from(taskPath).sublist(0, taskPath.length - 1);
-      if (selectedTaskPath == lastTaskPath) {
-        selectedTasks.add(task);
-      } else {
-        selectedTask = task;
-        selectedTaskPath = List.from(taskPath);
-        lastTaskPath = selectedTaskPath;
-        selectedTasks.clear();
-      }
+
+    if(!selectedListOfTasks.contains(task)) {
+      selectedListOfTasks.add(task);
+      List<Task> cloneOfTaskPath = new List<Task>.from(taskPath);
+      selectedListOfTasksPath.add(cloneOfTaskPath);
     }
     notifyListeners();
   }
 
   void unDoSelection() {
-    selectedTask = null;
+    selectedListOfTasks.clear();
+    selectedListOfTasksPath.clear();
     notifyListeners();
   }
 
-  void updateSelectedTaskPathPercentage() {
-    selectedTaskPath.reversed.forEach((task) {
-      task.updatePercentage();
-    });
-    storage.writeData(root);
-    notifyListeners();
-  }
 
-  void updateTaskPathPercentage() {
-    taskPath.reversed.forEach((task) {
+  void updateTaskPathPercentage(List<Task> tp) {
+    tp.reversed.forEach((task) {
       task.updatePercentage();
     });
     storage.writeData(root);
@@ -75,7 +55,7 @@ class AppState extends ChangeNotifier {
 
   void deleteTask(Task task, Task parent) {
     parent.children.remove(task);
-    updateTaskPathPercentage();
+    updateTaskPathPercentage(taskPath);
     storage.writeData(root);
     notifyListeners();
   }
@@ -108,12 +88,17 @@ class AppState extends ChangeNotifier {
   }
 
   void moveTask() {
-    selectedTaskPath.last.children.remove(selectedTask);
-    updateSelectedTaskPathPercentage();
+    
+    for(List<Task> tsp in selectedListOfTasksPath){
+      tsp.first.children.remove(selectedListOfTasks.first);
+      updateTaskPathPercentage(tsp.first.children);
 
-    task.children.add(selectedTask);
-    updateTaskPathPercentage();
-    selectedTask = null;
+      task.children.add(selectedListOfTasks.first);
+      selectedListOfTasks.removeAt(0);
+      updateTaskPathPercentage(taskPath);
+    }
+    selectedListOfTasks.clear();
+    selectedListOfTasksPath.clear();
 
     notifyListeners();
   }

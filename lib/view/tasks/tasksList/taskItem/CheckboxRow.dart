@@ -25,7 +25,7 @@ class CheckboxRow extends StatelessWidget {
                 else
                   task.percentage = 0;
 
-                appState.updateTaskPathPercentage();
+                appState.updateTaskPathPercentage(appState.taskPath);
             },
           ),
         ],

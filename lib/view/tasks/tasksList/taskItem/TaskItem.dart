@@ -16,7 +16,6 @@ class TaskItem extends StatefulWidget {
 }
 
 class TaskItemState extends State<TaskItem> {
-  bool selected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class TaskItemState extends State<TaskItem> {
             deleteDialog(appState);
           },
           child: Card(
-            color: getColor(),
+            color: getColor(appState.selectedListOfTasks),
             margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: getCardContent(widget.task, appState.updateTaskPathPercentage),
           ),
@@ -41,16 +40,13 @@ class TaskItemState extends State<TaskItem> {
           appState.openTask(widget.task);
         },
         onDoubleTap: () {
-          setState(() {
-            selected = true;
-          });
           appState.selectTask(widget.task);
         },
       );
     }
 
-  Color getColor() {
-    if (selected) {
+  Color getColor(List<Task> tasks) {
+    if (tasks.contains(widget.task)) {
       return Colors.lightGreenAccent[100];
     } else {
       return Colors.white;
