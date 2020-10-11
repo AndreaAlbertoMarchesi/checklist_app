@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "648258807148",
+    "firebase_url": "https://checklify-49316.firebaseio.com",
+    "project_id": "checklify-49316",
+    "storage_bucket": "checklify-49316.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:648258807148:android:76bdf23adcaa7ccbfb7f49",
+        "android_client_info": {
+          "package_name": "com.example.checklist_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "648258807148-sihk8i3ju3gv7plph2gq4fgnl6u1n5p0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1ATWXvgdDA5WanSMPAph-GZ54sMs1LfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "648258807148-sihk8i3ju3gv7plph2gq4fgnl6u1n5p0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

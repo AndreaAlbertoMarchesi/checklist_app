@@ -1,10 +1,13 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'AddDialog.dart';
 
 class AddButton extends StatelessWidget {
+  static final _db = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -26,10 +29,9 @@ class AddButton extends StatelessWidget {
                   ),
                 ),
               ],
-            )
-        ),
+            )),
       );
-    }else{
+    } else {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
@@ -53,8 +55,7 @@ class AddButton extends StatelessWidget {
                   ),
                 ),
               ],
-            )
-        ),
+            )),
       );
     }
   }
