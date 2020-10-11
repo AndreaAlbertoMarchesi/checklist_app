@@ -27,13 +27,5 @@ class Task {
 
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 
-  ///per cambiare ordine sul model e non solo sulla view
-  void handleReorder(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final element = this.children.removeAt(oldIndex);
-    this.children.insert(newIndex, element);
-  }
 
 }

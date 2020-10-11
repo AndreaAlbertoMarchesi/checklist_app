@@ -13,7 +13,7 @@ class TasksList extends StatelessWidget {
     return Expanded(
         child: ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {
-        appState.task.handleReorder(oldIndex, newIndex);
+        appState.handleReorder(oldIndex, newIndex);
       },
       children: appState.task.children.map((task) {
         return Container(

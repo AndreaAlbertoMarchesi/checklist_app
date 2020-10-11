@@ -102,4 +102,14 @@ class AppState extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void handleReorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final element = task.children.removeAt(oldIndex);
+    task.children.insert(newIndex, element);
+
+    notifyListeners();
+  }
 }
