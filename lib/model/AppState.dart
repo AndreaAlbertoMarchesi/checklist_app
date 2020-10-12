@@ -1,5 +1,6 @@
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'Task.dart';
 
@@ -82,19 +83,22 @@ class AppState extends ChangeNotifier {
   }
 
   void openTask(Task task) {
-    taskPath.add(task);
-    this.task = task;
-    notifyListeners();
+    if(!selectedListOfTasks.contains(task)) {
+      taskPath.add(task);
+      this.task = task;
+      notifyListeners();
+    }
   }
 
   void moveTask() {
     
     for(List<Task> tsp in selectedListOfTasksPath){
-      tsp.first.children.remove(selectedListOfTasks.first);
-      updateTaskPathPercentage(tsp.first.children);
+      Task tempTask = selectedListOfTasks.first;
+      tsp.last.children.remove(tempTask);
+      updateTaskPathPercentage(tsp.last.children);
 
-      task.children.add(selectedListOfTasks.first);
-      selectedListOfTasks.removeAt(0);
+      task.children.add(tempTask);
+      selectedListOfTasks.remove(tempTask);
       updateTaskPathPercentage(taskPath);
     }
     selectedListOfTasks.clear();

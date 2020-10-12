@@ -41,7 +41,6 @@ class _SettingsPageState extends State<SettingsPage> {
             onChanged: (value) {
               setState(() {
                 _dark = value;
-
               });
               //dark mode implementation
             },

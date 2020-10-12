@@ -2,6 +2,7 @@ import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:vibration/vibration.dart';
 import 'CheckboxRow.dart';
 import 'PercentageRow.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +27,10 @@ class TaskItemState extends State<TaskItem> {
           endOffset: Offset(-0.6, 0.0),
           animationDuration: const Duration(milliseconds: 300),
           iconData: Icons.delete_outline,
+          iconColor: Colors.red,
           callBack: () {
             print('Callback from Swipe To Left');
+            Vibration.vibrate(duration: 100);
             deleteDialog(appState);
           },
           child: Card(
@@ -40,6 +43,7 @@ class TaskItemState extends State<TaskItem> {
           appState.openTask(widget.task);
         },
         onDoubleTap: () {
+          Vibration.vibrate(duration: 100);
           appState.selectTask(widget.task);
         },
       );
