@@ -1,15 +1,18 @@
 import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/services/Database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'AddDialog.dart';
 
-class AddButton extends StatelessWidget {
-  static final _db = FirebaseFirestore.instance;
+class AddButton extends StatelessWidget { 
 
   @override
   Widget build(BuildContext context) {
+    final database = Database();
+    final stream = context.watch<List<Task>>();
     final appState = context.watch<AppState>();
     if (appState.selectedListOfTasks.isEmpty) {
       return Padding(
@@ -22,6 +25,9 @@ class AddButton extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
                     onPressed: () {
+                      //print(stream.length);
+                      database.addTask();
+
                       openAddDialog(context);
                     },
                     child: Icon(Icons.add),
