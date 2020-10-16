@@ -5,29 +5,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
   static FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
-  static Database instance;
   static String userID = "userID";
 
-  Database() {
-    if (instance == null) instance = this;
-  }
-
   static Stream<QuerySnapshot> getChildrenStream(String parentID) {
-    print("called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    return FirebaseFirestore.instance
+    return _fireStoreDataBase
         .collection('tasks')
         .where("parents", arrayContains: Parent("userID", parentID).toJson())
         .snapshots();
   }
 
-  moveTask(String taskID) {
+  static Stream<DocumentSnapshot> getTaskStream(String taskID) {
+    return _fireStoreDataBase.collection('tasks').doc(taskID).snapshots();
+  }
+
+  static moveTask(String taskID) {
     _fireStoreDataBase.collection("users").doc(taskID).update({
       "parents": 13,
     });
   }
 
-  //upload a data
-  addTask(String taskName, String parent) {
+  static addTask(String taskName, String parent) {
     var addTaskData = Map<String, dynamic>();
     addTaskData['title'] = taskName;
     addTaskData['parents'] = [Parent(userID, parent).toJson()];

@@ -13,7 +13,7 @@ class TasksList extends StatelessWidget {
     final appState = context.watch<AppState>();
 
     return StreamBuilder(
-        stream: Database.getChildrenStream(appState.currentTask.id),
+        stream: Database.getChildrenStream(appState.parentTask.id),
         /*FirebaseFirestore.instance
             .collection('tasks').
             where("parents", arrayContains: Parent("userID",appState.currentTask.id).toJson())

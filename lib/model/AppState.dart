@@ -9,20 +9,19 @@ class AppState extends ChangeNotifier {
   List<Task> taskPath = List<Task>();
 
   List<Task> tasks = List<Task>();
-  Task currentTask = Task(null);
+  Task parentTask = Task(null);
 
   List<Task> selectedListOfTasks = [];
   List<List<Task>> selectedListOfTasksPath = [];
 
 
   openTask(Task task){
-    currentTask = task;
+    parentTask = task;
     notifyListeners();
-    print("done");
   }
 
   addTask(String name){
-    Database.instance.addTask(name, currentTask.id);
+    Database.addTask(name, parentTask.id);
     notifyListeners();
   }
 
@@ -43,8 +42,8 @@ class AppState extends ChangeNotifier {
   }
 
   backToPreviousTask() async {
-    if (currentTask.getParent("userID")!=null) {
-      currentTask = await Database.getTask(currentTask.getParent("userID"));
+    if (parentTask.getParent("userID")!=null) {
+      parentTask = await Database.getTask(parentTask.getParent("userID"));
       notifyListeners();
     }
   }

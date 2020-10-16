@@ -1,5 +1,6 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -12,8 +13,7 @@ class ParentTaskItem extends StatelessWidget {
     final appState = context.watch<AppState>();
 
     return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('tasks').doc(appState.currentTask.id).snapshots(),
+        stream: Database.getTaskStream(appState.parentTask.id),
 
         builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           print("yoooooooo:"+snapshot.data.toString());
