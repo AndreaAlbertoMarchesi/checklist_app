@@ -130,6 +130,42 @@ class _SignInState extends State<SignIn> {
                 error,
                 style: TextStyle(color: Colors.red, fontSize: 14.0),
               ),
+              OutlineButton(
+                splashColor: Colors.blueGrey[300],
+                onPressed: () async{
+                  AppUser result = await _auth.signInWithGoogle();
+                  if(result != null){
+                    setState(() {
+                      appState.setCredential(result);
+                      Navigator.of(context).pop();
+                    });
+                  }else{
+                    print("error");
+                  }
+                },
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                highlightElevation: 0,
+                borderSide: BorderSide(color: Colors.blueAccent[700]),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(
+                          'Sign in with Google',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

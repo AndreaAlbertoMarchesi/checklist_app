@@ -3,8 +3,6 @@ import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/Settings/DarkThemeState.dart';
 import 'package:checklist_app/view/Settings/Styles.dart';
-import 'package:checklist_app/model/Task.dart';
-import 'package:checklist_app/services/Database.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
 import 'package:checklist_app/view/home/SideMenu.dart';
 import 'package:checklist_app/view/tasks/ParentTaskItem.dart';
@@ -27,12 +25,9 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    getCurrentAppTheme();
+    darkThemeState.getDarkTheme();
   }
-  void getCurrentAppTheme() async {
-    darkThemeState.darkTheme =
-    await darkThemeState.darkThemePreference.getTheme();
-  }
+
 
   @override
   Widget build(BuildContext context) {

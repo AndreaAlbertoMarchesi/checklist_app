@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:checklist_app/model/AppUser.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthenticationService {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  User currentUser;
+  GoogleSignInAccount googleUser;
 
   // create user obj based on firebase user
   AppUser _userFromFirebaseUser(User user) {
@@ -36,8 +40,8 @@ class AuthenticationService {
     try {
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
-      User user = userCredential.user;
-      return _userFromFirebaseUser(user);
+      currentUser = userCredential.user;
+      return _userFromFirebaseUser(currentUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -51,11 +55,11 @@ class AuthenticationService {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-      User user = userCredential.user;
+      currentUser = userCredential.user;
 
       ///_verifyEmail(user);
 
-      return _userFromFirebaseUser(user);
+      return _userFromFirebaseUser(currentUser);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -70,21 +74,48 @@ class AuthenticationService {
 
   // sign out
   Future signOut() async {
-    try {
-      return await _firebaseAuth.signOut();
-    } catch (error) {
-      print("ciao");
-      print(error.toString());
-      return null;
+    if(googleUser != null){
+      signOutGoogle();
+    }else {
+      try {
+        return await _firebaseAuth.signOut();
+      } catch (error) {
+        print(error.toString());
+        return null;
+      }
     }
   }
 
-  Future GoogleSignIn() async{
+  Future<AppUser> signInWithGoogle() async{
 
+    googleUser = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication = await googleUser.authentication;
 
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+    final UserCredential authResult = await _firebaseAuth.signInWithCredential(credential);
+    final User user = authResult.user;
 
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _firebaseAuth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('signInWithGoogle succeeded: $user');
+
+      return _userFromFirebaseUser(user);
+    }
+    return null;
   }
 
+  Future<void> signOutGoogle() async {
+    await googleSignIn.signOut();
+    print("User Signed Out");
+  }
 
   //delete a user
   void deleteUser() async {

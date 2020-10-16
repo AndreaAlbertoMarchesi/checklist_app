@@ -63,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
             value: darkThemeState.darkTheme,
             title: Text("Dark mode"),
             onChanged: (value) {
-              darkThemeState.darkTheme = value;
+              darkThemeState.setDarkTheme(value);
             },
           ),
           SwitchListTile(
