@@ -7,12 +7,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'AddDialog.dart';
 
-class AddButton extends StatelessWidget { 
+class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final database = Database();
-    final stream = context.watch<List<Task>>();
     final appState = context.watch<AppState>();
     if (appState.selectedListOfTasks.isEmpty) {
       return Padding(
@@ -25,9 +23,6 @@ class AddButton extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
                     onPressed: () {
-                      //print(stream.length);
-                      database.addTask();
-
                       openAddDialog(context);
                     },
                     child: Icon(Icons.add),
@@ -47,7 +42,7 @@ class AddButton extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
-                    onPressed: appState.moveTask,
+                    onPressed: (){}, //appState.moveTask,
                     child: Icon(Icons.drive_file_move),
                     backgroundColor: Colors.greenAccent[400],
                   ),

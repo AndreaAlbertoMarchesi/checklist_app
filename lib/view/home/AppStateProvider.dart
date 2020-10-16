@@ -8,14 +8,10 @@ import 'Home.dart';
 class AppStateProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final  database = Database();
 
     return ChangeNotifierProvider(
         create: (_) => AppState(),
-        child: StreamProvider(
-            create: (BuildContext context) => database.getTaskList(),
-            child: Home()
-        )
+        child: Home()
     );
   }
 }

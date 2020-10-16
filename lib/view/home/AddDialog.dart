@@ -1,4 +1,5 @@
 import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/services/Database.dart';
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class AddDialog extends StatelessWidget {
           ),
           validator: (val) => val.isEmpty ? 'Enter a valid name' : null,
           onChanged: (val) {
-           taskName = val;
+            taskName = val;
           },
         ),
       ),

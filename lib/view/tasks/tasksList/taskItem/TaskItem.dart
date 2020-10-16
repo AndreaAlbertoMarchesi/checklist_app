@@ -1,5 +1,6 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/services/Database.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:vibration/vibration.dart';
@@ -36,7 +37,7 @@ class TaskItemState extends State<TaskItem> {
           child: Card(
             color: getColor(appState.selectedListOfTasks),
             margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: getCardContent(widget.task, appState.updateTaskPathPercentage),
+            child: getCardContent(widget.task),
           ),
         ),
         onTap: () {
@@ -57,8 +58,8 @@ class TaskItemState extends State<TaskItem> {
     }
   }
 
-  Widget getCardContent(Task task, Function refresh) {
-    if (task.children.isEmpty)
+  Widget getCardContent(Task task) {
+    if (true)
       return CheckboxRow(task);
     else
       return PercentageRow(task);

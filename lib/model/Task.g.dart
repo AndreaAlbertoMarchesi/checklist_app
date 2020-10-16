@@ -10,15 +10,29 @@ Task _$TaskFromJson(Map<String, dynamic> json) {
   return Task(
     json['title'] as String,
   )
-    ..children = (json['children'] as List)
-        ?.map(
-            (e) => e == null ? null : Task.fromJson(e as Map<String, dynamic>))
+    ..id = json['id'] as String
+    ..parents = (json['parents'] as List)
+        ?.map((e) =>
+            e == null ? null : Parent.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..percentage = json['percentage'] as num;
 }
 
 Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
+      'id': instance.id,
+      'parents': instance.parents?.map((e) => e?.toJson())?.toList(),
       'title': instance.title,
-      'children': instance.children?.map((e) => e?.toJson())?.toList(),
       'percentage': instance.percentage,
+    };
+
+Parent _$ParentFromJson(Map<String, dynamic> json) {
+  return Parent(
+    json['userID'] as String,
+    json['parent'] as String,
+  );
+}
+
+Map<String, dynamic> _$ParentToJson(Parent instance) => <String, dynamic>{
+      'userID': instance.userID,
+      'parent': instance.parent,
     };

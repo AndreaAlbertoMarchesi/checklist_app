@@ -51,7 +51,7 @@ class TaskPath extends StatelessWidget {
                 )
               ]),
               onTap: () {
-                appState.backToTask(task);
+                //appState.backToTask(task);
               },
             );
           }).toList().sublist(0, appState.taskPath.length),
