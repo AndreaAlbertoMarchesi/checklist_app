@@ -1,5 +1,6 @@
 
 import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/view/Settings/DarkThemeProvider.dart';
 import 'package:checklist_app/view/Settings/SettingsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class SideMenu extends StatelessWidget {
                     child: CircleAvatar(
                     ),
                   ),
-                  Text("nome.cognome")
+                  Text(appState.appUser.email)
                 ],
               )
           ),
@@ -37,7 +38,9 @@ class SideMenu extends StatelessWidget {
             title: Text('Settings'),
             onTap: () {
               Navigator.of(context).pop();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => SettingsPage())
+              );
             },
           ),
           ListTile(

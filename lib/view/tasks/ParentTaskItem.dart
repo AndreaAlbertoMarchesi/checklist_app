@@ -1,5 +1,6 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/view/Settings/DarkThemeState.dart';
 import 'package:checklist_app/services/Database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,15 @@ class ParentTaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
+    final darkState = context.watch<DarkThemeState>();
+
+    Color getColor(){
+      if(darkState.darkTheme){
+        return Colors.blueGrey;
+      }else{
+        return Colors.lightBlue[50];
+      }
+    }
 
     return StreamBuilder(
         stream: Database.getTaskStream(appState.parentTask.id),
@@ -24,9 +34,9 @@ class ParentTaskItem extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.lightBlue[100],
+                  color: getColor(),
                   boxShadow: [
-                    BoxShadow(color: Colors.lightBlue[100], spreadRadius: 3),
+                    BoxShadow(color: getColor(), spreadRadius: 3),
                   ],
                 ),
                 child: Row(
@@ -48,10 +58,26 @@ class ParentTaskItem extends StatelessWidget {
                       padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                       /*
               child: CircularPercentIndicator(
-                radius: 35.0,
+                radius: 45.0,
                 lineWidth: 8.0,
                 percent: appState.task.percentage.toDouble(),
+                animation: true,
+                animateFromLastPercent: true,
+                circularStrokeCap: CircularStrokeCap.round,
                 center: isCompleted(appState.task, appState.task.percentage.toDouble()),
+                linearGradient: LinearGradient(
+                    colors: [
+                      Colors.greenAccent[400],
+                      Colors.red,
+                    ]
+
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
                 progressColor: Colors.greenAccent[400],
               ),*/
                     ),
@@ -73,11 +99,13 @@ class ParentTaskItem extends StatelessWidget {
 
   Widget isCompleted(Task task, num percentage){
     if((percentage*100) == 100.0){
-      return Image.asset('images/completeIcon.png');
+      return Icon(
+        IconData(0xf10d, fontFamily: 'MaterialIcons'),
+        color: Colors.greenAccent[700],
+      );
     }else
       return Text(
-          (task.percentage * 100).toInt().toString() +
-              "%");
+          (task.percentage * 100).toInt().toString() + "%");
   }
 
 }

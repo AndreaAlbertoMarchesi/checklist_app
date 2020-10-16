@@ -23,11 +23,19 @@ class PercentageRow extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
               child: CircularPercentIndicator(
-                radius: 35.0,
+                radius: 40.0,
                 lineWidth: 8.0,
                 percent: task.percentage.toDouble(),
+                animation: true,
+                animateFromLastPercent: true,
+                circularStrokeCap: CircularStrokeCap.round,
                 center: isCompleted(task.percentage.toDouble()),
-                progressColor: Colors.greenAccent[400],
+                linearGradient: LinearGradient(
+                    colors: [
+                      Colors.greenAccent[400],
+                      Colors.red,
+                    ]
+                ),
               ),
             ),
           ],
@@ -37,10 +45,12 @@ class PercentageRow extends StatelessWidget {
   }
   Widget isCompleted(num percentage){
     if((percentage*100) == 100.0){
-      return Image.asset('images/completeIcon.png');
+      return Icon(
+        IconData(0xe0de, fontFamily: 'MaterialIcons'),
+        color: Colors.greenAccent[700],
+      );
     }else
       return Text(
-          (task.percentage * 100).toInt().toString() +
-              "%");
+          (task.percentage * 100).toInt().toString() + "%");
   }
 }

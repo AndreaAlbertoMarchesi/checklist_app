@@ -1,7 +1,11 @@
-
+import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/view/Settings/DarkThemeProvider.dart';
 import 'package:checklist_app/view/authentication/Authenticate.dart';
+import 'package:checklist_app/view/home/AppStateProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:checklist_app/view/Settings/DarkThemeState.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -10,11 +14,14 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
-  bool _dark= false;
   bool _notification = false;
 
   @override
   Widget build(BuildContext context) {
+
+    final darkThemeState = context.watch<DarkThemeState>();
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Settings"),
@@ -32,17 +39,31 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("nome.cognome@mail.com"),
+            child: Text(appState.appUser.email),
+          ),
+          ListTile(
+            title: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2.0,8.0, 8.0,8.0),
+                  child: Icon(Icons.account_circle_outlined),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20,8.0, 8.0,8.0),
+                  child: Text("Account"),
+                )
+              ],
+            ),
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
+            },
           ),
           SwitchListTile(
             secondary: const Icon(Icons.lightbulb_outline),
-            value: _dark,
+            value: darkThemeState.darkTheme,
             title: Text("Dark mode"),
             onChanged: (value) {
-              setState(() {
-                _dark = value;
-              });
-              //dark mode implementation
+              darkThemeState.darkTheme = value;
             },
           ),
           SwitchListTile(
@@ -53,12 +74,6 @@ class _SettingsPageState extends State<SettingsPage> {
               setState(() {
                 _notification = value;
               });
-            },
-          ),
-          ListTile(
-            title: Center(child: Text("Account")),
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Authenticate()));
             },
           ),
           ListTile(

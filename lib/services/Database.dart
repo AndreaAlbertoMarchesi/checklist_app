@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:checklist_app/model/Task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -28,7 +26,17 @@ class Database {
     var addTaskData = Map<String, dynamic>();
     addTaskData['title'] = taskName;
     addTaskData['parents'] = [Parent(userID, parent).toJson()];
+    addTaskData['caseSearch'] = setSearchParam(taskName);
     return _fireStoreDataBase.collection('tasks').add(addTaskData);
+  }
+  static setSearchParam(String taskName){
+    List<String> caseSearchList = List();
+    String temp = "";
+    for(int i = 0 ; i < taskName.length; i++){
+      temp = temp + taskName[i];
+      caseSearchList.add(temp);
+    }
+    return caseSearchList;
   }
 
   static Future<Task> getTask(String taskID) async {

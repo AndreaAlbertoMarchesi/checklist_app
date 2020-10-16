@@ -10,6 +10,7 @@ class AuthenticationService {
     return user != null ? AppUser(uid: user.uid, email: user.email) : null;
   }
 
+  //this method for later
   void _verifyEmail(User user) async {
     if (!user.emailVerified) {
       await user.sendEmailVerification();
@@ -36,7 +37,7 @@ class AuthenticationService {
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
       User user = userCredential.user;
-      return user;
+      return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -46,7 +47,7 @@ class AuthenticationService {
     }
   }
 
-  registerWithEmailAndPassword(String email, String password) async {
+  Future<AppUser> registerWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -64,6 +65,7 @@ class AuthenticationService {
     } catch (e) {
       print(e);
     }
+    return null;
   }
 
   // sign out
@@ -71,10 +73,18 @@ class AuthenticationService {
     try {
       return await _firebaseAuth.signOut();
     } catch (error) {
+      print("ciao");
       print(error.toString());
       return null;
     }
   }
+
+  Future GoogleSignIn() async{
+
+
+
+  }
+
 
   //delete a user
   void deleteUser() async {

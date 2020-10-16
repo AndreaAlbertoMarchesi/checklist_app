@@ -1,4 +1,8 @@
+import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/model/AppUser.dart';
 import 'package:checklist_app/services/AuthenticationService.dart';
+import 'package:checklist_app/view/Settings/DarkThemeState.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 import 'LoadingPage.dart';
@@ -25,9 +29,23 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+
+    final darkState = context.watch<DarkThemeState>();
+    final appState = context.watch<AppState>();
+
+    Color getColor(){
+      if(darkState.darkTheme){
+        return Colors.blueGrey;
+      }else{
+        return Colors.lightBlue;
+      }
+    }
+
     return loading ? Loading() : Scaffold(
+      backgroundColor: Colors.lightBlue[200],
       appBar: AppBar(
-        title: Text('Sign in with your credentials'),
+        backgroundColor: getColor(),
+        title: Text('Sign in'),
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
@@ -46,14 +64,14 @@ class _SignInState extends State<SignIn> {
               TextFormField(
                 decoration: InputDecoration(
                   hintText: "email",
-                  fillColor: Colors.cyan[100],
+                  fillColor: getColor(),
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                    borderSide: BorderSide(color: getColor(), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.pink, width: 2.0),
+                    borderSide: BorderSide(color: Colors.blueAccent[700], width: 2.0),
                   ),
                 ),
                 validator: (val) => val.isEmpty ? 'Enter an email' : null,
@@ -66,14 +84,14 @@ class _SignInState extends State<SignIn> {
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "password",
-                  fillColor: Colors.cyan[100],
+                  fillColor: getColor(),
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                    borderSide: BorderSide(color: getColor(), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.pink, width: 2.0),
+                    borderSide: BorderSide(color: Colors.blueAccent[700], width: 2.0),
                   ),
                 ),
                 validator: (val) => val.length < 6 ? 'Enter a password 6+ chars long' : null,
@@ -91,11 +109,17 @@ class _SignInState extends State<SignIn> {
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
                       setState(() => loading = true);
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                      AppUser result = await _auth.signInWithEmailAndPassword(email, password);
                       if(result == null) {
                         setState(() {
                           loading = false;
                           error = 'Could not sign in with those credentials';
+                        });
+                      }else{
+                        setState(() {
+                          loading =false;
+                          appState.setCredential(result);
+                          Navigator.of(context).pop();
                         });
                       }
                     }

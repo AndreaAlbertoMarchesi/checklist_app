@@ -4,9 +4,11 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.cyan[100],
+      color: Colors.lightBlue[100],
       child: Center(
-        child: Text("loading"),
+        child: Card(
+          child: Text("Loading"),
+        ),
       ),
     );
   }

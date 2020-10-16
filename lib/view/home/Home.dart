@@ -1,6 +1,8 @@
 import 'package:checklist_app/controller/Search.dart';
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/view/Settings/DarkThemeState.dart';
+import 'package:checklist_app/view/Settings/Styles.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:checklist_app/services/Database.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
@@ -20,14 +22,25 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
 
+  DarkThemeState darkThemeState = new DarkThemeState();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+  void getCurrentAppTheme() async {
+    darkThemeState.darkTheme =
+    await darkThemeState.darkThemePreference.getTheme();
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-
-
+    final darkState = context.watch<DarkThemeState>();
 
     return MaterialApp(
-      theme: ThemeData.light(),
+      theme: Styles.themeData(darkState.darkTheme, context),
       home: WillPopScope(
         onWillPop: () async {
           appState.backToPreviousTask();

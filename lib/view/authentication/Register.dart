@@ -1,5 +1,9 @@
+import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/model/AppUser.dart';
 import 'package:checklist_app/services/AuthenticationService.dart';
 import 'package:checklist_app/view/authentication/LoadingPage.dart';
+import 'package:checklist_app/view/Settings/DarkThemeState.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
@@ -23,12 +27,23 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+
+    final darkState = context.watch<DarkThemeState>();
+    final appState = context.watch<AppState>();
+
+    Color getColor(){
+      if(darkState.darkTheme){
+        return Colors.blueGrey;
+      }else{
+        return Colors.lightBlue;
+      }
+    }
     return loading ? Loading() : Scaffold(
-      backgroundColor: Colors.brown[100],
+      backgroundColor: Colors.lightBlue[200],
       appBar: AppBar(
-        backgroundColor: Colors.brown[400],
+        backgroundColor: getColor(),
         elevation: 0.0,
-        title: Text('Sign up to Brew Crew'),
+        title: Text('Login in page'),
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
@@ -46,15 +61,15 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: InputDecoration(
-                  hintText: "password",
-                  fillColor: Colors.cyan[100],
+                  hintText: "email",
+                  fillColor:getColor(),
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                    borderSide: BorderSide(color: getColor(), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.pink, width: 2.0),
+                    borderSide: BorderSide(color: Colors.blueAccent[700], width: 2.0),
                   ),
                 ),
                 validator: (val) => val.isEmpty ? 'Enter an email' : null,
@@ -66,14 +81,14 @@ class _RegisterState extends State<Register> {
               TextFormField(
                 decoration: InputDecoration(
                   hintText: "password",
-                  fillColor: Colors.cyan[100],
+                  fillColor: getColor(),
                   filled: true,
                   contentPadding: EdgeInsets.all(12.0),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                    borderSide: BorderSide(color: getColor(), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.pink, width: 2.0),
+                    borderSide: BorderSide(color: Colors.blueAccent[700], width: 2.0),
                   ),
                 ),
                 obscureText: true,
@@ -95,12 +110,18 @@ class _RegisterState extends State<Register> {
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       setState(() => loading = true);
-                      dynamic result = await _auth.registerWithEmailAndPassword(
+                      AppUser result = await _auth.registerWithEmailAndPassword(
                           email, password);
                       if (result == null) {
                         setState(() {
                           loading = false;
                           error = 'Please supply a valid email';
+                        });
+                      }else{
+                        setState(() {
+                          loading =false;
+                          appState.setCredential(result);
+                          Navigator.of(context).pop();
                         });
                       }
                     }

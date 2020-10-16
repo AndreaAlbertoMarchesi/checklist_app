@@ -1,5 +1,5 @@
 import 'package:checklist_app/model/AppState.dart';
-import 'package:checklist_app/services/Database.dart';
+import 'package:checklist_app/view/Settings/DarkThemeProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +11,8 @@ class AppStateProvider extends StatelessWidget {
 
     return ChangeNotifierProvider(
         create: (_) => AppState(),
-        child: Home()
+        child: DarkThemeProvider(
+        ),
     );
   }
 }
