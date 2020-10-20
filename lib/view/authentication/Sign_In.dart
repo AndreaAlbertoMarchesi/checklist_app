@@ -19,7 +19,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
 
-  final AuthenticationService _auth = AuthenticationService();
+
   final _formKey = GlobalKey<FormState>();
   String error = '';
   bool loading = false;
@@ -109,8 +109,8 @@ class _SignInState extends State<SignIn> {
                   onPressed: () async {
                     if(_formKey.currentState.validate()){
                       setState(() => loading = true);
-                      AppUser result = await _auth.signInWithEmailAndPassword(email, password);
-                      if(result == null) {
+                      await appState.signInWithEmailAndPassword(email, password);
+                      if(appState.appUser.email == "Anonymous") {
                         setState(() {
                           loading = false;
                           error = 'Could not sign in with those credentials';
@@ -118,7 +118,6 @@ class _SignInState extends State<SignIn> {
                       }else{
                         setState(() {
                           loading =false;
-                          appState.setCredential(result);
                           Navigator.of(context).pop();
                         });
                       }
@@ -133,14 +132,17 @@ class _SignInState extends State<SignIn> {
               OutlineButton(
                 splashColor: Colors.blueGrey[300],
                 onPressed: () async{
-                  AppUser result = await _auth.signInWithGoogle();
-                  if(result != null){
+                  await appState.signInWithGoogle();
+                  if(appState.appUser.email == "Anonymous"){
                     setState(() {
-                      appState.setCredential(result);
+                      print("error");
+                      loading = false;
+                      error = 'Could not sign in with those credentials';
                       Navigator.of(context).pop();
                     });
                   }else{
-                    print("error");
+                    loading =false;
+                    Navigator.of(context).pop();
                   }
                 },
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),

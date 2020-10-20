@@ -5,13 +5,19 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthenticationService {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   User currentUser;
   GoogleSignInAccount googleUser;
 
   // create user obj based on firebase user
-  AppUser _userFromFirebaseUser(User user) {
-    return user != null ? AppUser(uid: user.uid, email: user.email) : null;
+  AppUser _userFromFirebaseUser(String photoURL) {
+    if(googleUser != null){
+      return AppUser(uid: googleUser.id, email: googleUser.email, photoURL: photoURL);
+    }else{
+      return currentUser != null ? AppUser(uid: currentUser.uid, email: currentUser.email, photoURL: photoURL) : null;
+    }
+
   }
 
   //this method for later
@@ -36,12 +42,12 @@ class AuthenticationService {
   }
 
   // sign in with email and password
-  Future signInWithEmailAndPassword(String email, String password) async {
+  Future<AppUser> signInWithEmailAndPassword(String email, String password, String photoUrl) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
       currentUser = userCredential.user;
-      return _userFromFirebaseUser(currentUser);
+      return _userFromFirebaseUser(photoUrl);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -49,9 +55,10 @@ class AuthenticationService {
         print('Wrong password provided for that user.');
       }
     }
+    return null;
   }
 
-  Future<AppUser> registerWithEmailAndPassword(String email, String password) async {
+  Future<AppUser> registerWithEmailAndPassword(String email, String password,String photoUrl ) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -59,7 +66,7 @@ class AuthenticationService {
 
       ///_verifyEmail(user);
 
-      return _userFromFirebaseUser(currentUser);
+      return _userFromFirebaseUser(photoUrl);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -73,7 +80,7 @@ class AuthenticationService {
   }
 
   // sign out
-  Future signOut() async {
+  Future<void> signOut() async {
     if(googleUser != null){
       signOutGoogle();
     }else {
@@ -88,7 +95,7 @@ class AuthenticationService {
 
   Future<AppUser> signInWithGoogle() async{
 
-    googleUser = await googleSignIn.signIn();
+    googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication = await googleUser.authentication;
 
     final AuthCredential credential = GoogleAuthProvider.credential(
@@ -107,13 +114,14 @@ class AuthenticationService {
 
       print('signInWithGoogle succeeded: $user');
 
-      return _userFromFirebaseUser(user);
+      return _userFromFirebaseUser(user.photoURL);
     }
     return null;
   }
 
   Future<void> signOutGoogle() async {
-    await googleSignIn.signOut();
+    await _googleSignIn.signOut();
+    googleUser = null;
     print("User Signed Out");
   }
 

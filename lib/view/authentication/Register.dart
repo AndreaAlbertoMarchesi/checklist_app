@@ -17,7 +17,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
-   AuthenticationService _auth = AuthenticationService();
+
   final _formKey = GlobalKey<FormState>();
   String error = '';
   bool loading = false;
@@ -111,9 +111,9 @@ class _RegisterState extends State<Register> {
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       setState(() => loading = true);
-                      AppUser result = await _auth.registerWithEmailAndPassword(
+                      await appState.registerWithEmailAndPsw(
                           email, password);
-                      if (result == null) {
+                      if (appState.appUser.email == "Anonymous") {
                         setState(() {
                           loading = false;
                           error = 'Please supply a valid email';
@@ -121,7 +121,6 @@ class _RegisterState extends State<Register> {
                       }else{
                         setState(() {
                           loading =false;
-                          appState.setCredential(result);
                           Navigator.of(context).pop();
                         });
                       }

@@ -21,6 +21,8 @@ class SideMenu extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.all(20),
                     child: CircleAvatar(
+                      backgroundImage: NetworkImage("${appState.appUser.photoURL}"),
+                      backgroundColor: Colors.transparent,
                     ),
                   ),
                   Text(appState.appUser.email)

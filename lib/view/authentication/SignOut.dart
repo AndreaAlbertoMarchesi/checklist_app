@@ -1,7 +1,4 @@
 import 'package:checklist_app/model/AppState.dart';
-import 'package:checklist_app/model/AppUser.dart';
-import 'package:checklist_app/services/AuthenticationService.dart';
-import 'package:checklist_app/view/Settings/DarkThemeState.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +11,6 @@ class SignOut extends StatefulWidget {
 
 class _SignOutState extends State<SignOut> {
 
-  final AuthenticationService _auth = AuthenticationService();
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +26,8 @@ class _SignOutState extends State<SignOut> {
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: CircleAvatar(
+                backgroundImage: NetworkImage("${appState.appUser.photoURL}"),
+                backgroundColor: Colors.transparent,
                 radius: 50,
                 //background image
               ),
@@ -50,13 +48,11 @@ class _SignOutState extends State<SignOut> {
                 child: RaisedButton(
                   child: Text("Sign Out"),
                   onPressed: () async{
-                    dynamic result = await _auth.signOut();
+                    appState.signOut();
                       setState(() {
-                        appState.signOut();
                         Navigator.of(context).pop();
                       });
                   },
-
                 ),
               )
             ],

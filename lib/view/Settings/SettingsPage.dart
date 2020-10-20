@@ -32,6 +32,8 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: CircleAvatar(
+                backgroundImage: NetworkImage("${appState.appUser.photoURL}"),
+                backgroundColor: Colors.transparent,
                 radius: 50,
                 //background image
               ),

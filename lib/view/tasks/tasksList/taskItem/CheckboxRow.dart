@@ -1,6 +1,7 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:checklist_app/view/Settings/DarkThemeState.dart';
+import 'package:checklist_app/view/home/ShareDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,16 @@ class CheckboxRow extends StatelessWidget {
         return Colors.lightBlue[50];
       }
     }
+
+    share(){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ShareDialog(task);
+        },
+      );
+    }
+
 
     return Container(
       decoration: BoxDecoration(
@@ -42,6 +53,12 @@ class CheckboxRow extends StatelessWidget {
             ),
           ),
           Expanded(child: Container()),
+          IconButton(
+              icon: Icon(Icons.share_outlined),
+              onPressed: (){
+                share();
+              }
+          ),
           Checkbox(
             value: task.percentage == 1,
             onChanged: (bool value) {

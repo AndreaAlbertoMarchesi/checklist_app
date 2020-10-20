@@ -1,4 +1,5 @@
 import 'package:checklist_app/model/AppUser.dart';
+import 'package:checklist_app/services/AuthenticationService.dart';
 import 'package:checklist_app/services/Database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ class AppState extends ChangeNotifier {
   List<Task> selectedListOfTasks = [];
   List<List<Task>> selectedListOfTasksPath = [];
 
-  AppUser appUser = new AppUser(email: "Anonymous", uid: "Anonymous");
+  AppUser appUser = new AppUser(email: "Anonymous", uid: "Anonymous",photoURL: "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png");
+  final AuthenticationService _auth = AuthenticationService();
 
   openTask(Task task){
     parentTask = task;
@@ -53,17 +55,50 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCredential(AppUser user){
-    appUser.email = user.email;
-    appUser.uid = user.uid;
+
+  Future<void> signInWithGoogle() async{
+    AppUser user = await _auth.signInWithGoogle();
+    if( user != null ){
+      appUser = user;
+      Database.addUser(appUser);
+    }
     notifyListeners();
   }
 
-  void signOut(){
-    appUser.email = "Anonymous";
-    appUser.uid = "Anonymous";
+  Future<void> signInWithEmailAndPassword(String email, String password) async{
+    AppUser user = await _auth.signInWithEmailAndPassword(email, password, appUser.photoURL);
+    if(user != null)
+      appUser = user;
     notifyListeners();
   }
+
+  Future<void> registerWithEmailAndPsw(String email, String password) async{
+
+    AppUser user = await _auth.registerWithEmailAndPassword(email, password, appUser.photoURL);
+    if( user != null ){
+      Database.addUser(user);
+      appUser = user;
+    }
+    notifyListeners();
+  }
+
+  void signOut() async {
+    await _auth.signOut();
+    appUser.email = "Anonymous";
+    appUser.uid = "Anonymous";
+    appUser.photoURL = "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png";
+    notifyListeners();
+  }
+
+  ///possiblie toast bar per notificare l'invio
+  Future<void> share(Task task, String email) async{
+    bool found = await Database.share(task, email);
+    if(found){
+      print("faccio notifica positiva");
+    }else
+      print("qualcosa è andato storto");
+  }
+
 
   /*void updateTaskPathPercentage(List<Task> tp) {
     tp.reversed.forEach((task) {

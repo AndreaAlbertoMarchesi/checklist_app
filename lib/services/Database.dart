@@ -1,3 +1,4 @@
+import 'package:checklist_app/model/AppUser.dart';
 import 'package:checklist_app/model/Task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -46,4 +47,41 @@ class Database {
     task.id = doc.id;
     return task;
   }
+
+  static addUser(AppUser user) async{
+
+    if( user != null ){
+      final QuerySnapshot querySnapshot = await _fireStoreDataBase.collection("users").where("userID" , isEqualTo: user.uid).get();
+      final List<DocumentSnapshot> docs = querySnapshot.docs;
+
+      if(docs.length == 0){
+        var addUser = Map<String, dynamic>();
+        addUser['userID'] = user.uid;
+        addUser['email'] = user.email;
+        addUser['photoURL'] = user.photoURL;
+        return _fireStoreDataBase.collection('users').add(addUser);
+      }else{
+        print("the user is already added");
+      }
+
+    }else{
+      print("the user from auth is null");
+    }
+
+  }
+
+
+  static Future<bool> share(Task task, String email) async{
+    //create a new document of a task with id of the new user and a collection of users data?
+    final QuerySnapshot querySnapshot = await _fireStoreDataBase.collection("users").where("email" , isEqualTo: email).get();
+    final List<DocumentSnapshot> docs = querySnapshot.docs;
+    if( docs != null){
+      print("user trovato");
+      docs.forEach((element) {print(element.data().toString());});
+      //associa una task a uno user
+      return true;
+    }
+    return false;
+  }
+
 }
