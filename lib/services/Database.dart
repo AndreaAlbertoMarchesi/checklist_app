@@ -20,7 +20,7 @@ class Database {
   static moveTask(Task taskToMove,String targetTaskID, String userID) {
     String currentParentID = taskToMove.getParentID(userID);
     taskToMove.parentObjects.forEach((parentObj) {
-      if(parentObj.parentID == currentParentID)
+      if(parentObj.parentID == currentParentID && parentObj.parentID != Task.getRoot().id)
         parentObj.parentID = targetTaskID;
     });
     _fireStoreDataBase.collection("tasks").doc(taskToMove.id).update({
@@ -44,8 +44,10 @@ class Database {
     _fireStoreDataBase.collection('tasks').doc(taskID).delete();
   }
 
-  static checkTask(String taskID) {
-    _fireStoreDataBase.collection("tasks").doc(taskID).update({});
+  static checkTask(Task task) {
+    _fireStoreDataBase.collection("tasks").doc(task.id).update({
+      "childrenSum": task.childrenSum,
+    });
   }
 
   static Future<Task> getTask(String taskID) async {

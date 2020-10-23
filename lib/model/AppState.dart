@@ -5,7 +5,6 @@ import 'package:checklist_app/services/AuthenticationService.dart';
 import 'package:checklist_app/services/Database.dart';
 import 'package:checklist_app/view/Settings/SharedPreferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -60,6 +59,14 @@ class AppState extends ChangeNotifier {
 
   void moveTask() {
     Database.moveTask(selectedListOfTasks.first, parentTask.id, appUser.uid);
+  }
+
+  void checkTask(Task task){
+    if(task.childrenSum==1)
+      task.childrenSum = 0;
+    else
+      task.childrenSum = 1;
+    Database.checkTask(task);
   }
 
   void selectTask(Task task) {

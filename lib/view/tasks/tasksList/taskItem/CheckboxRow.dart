@@ -62,7 +62,7 @@ class CheckboxRow extends StatelessWidget {
           Checkbox(
             value: task.getPercentage() == 1,
             onChanged: (bool value) {
-                //to implement
+                appState.checkTask(task);
             },
           ),
         ],

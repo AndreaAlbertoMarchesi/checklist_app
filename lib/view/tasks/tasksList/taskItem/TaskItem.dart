@@ -59,7 +59,7 @@ class TaskItemState extends State<TaskItem> {
   }
 
   Widget getCardContent(Task task) {
-    if (true)
+    if (task.childrenNumber==0)
       return CheckboxRow(task);
     else
       return PercentageRow(task);
