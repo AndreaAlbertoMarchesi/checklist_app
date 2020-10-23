@@ -12,27 +12,11 @@ class TasksList extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    return StreamBuilder(
-        stream: Database.getChildrenStream(appState.parentTask.id),
-        /*FirebaseFirestore.instance
-            .collection('tasks').
-            where("parents", arrayContains: Parent("userID",appState.currentTask.id).toJson())
-            .snapshots(),*/
-
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData)
-            return Expanded(
-                child: ReorderableListView(
-              onReorder: (int oldIndex, int newIndex) {},
-              children: getChildren(snapshot.data.docs.map((document) {
-                Task task = Task.fromJson(document.data());
-                task.id = document.id;
-                return task;
-              }).toList()))
-            );
-          else
-            return Container();
-        });
+    return Expanded(
+        child: ReorderableListView(
+      onReorder: (int oldIndex, int newIndex) {},
+      children: getChildren(appState.tasks),
+    ));
   }
 
   List<Widget> getChildren(List<Task> tasks) {

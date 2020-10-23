@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Database {
   static FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   static String userID = "userID";
-
+/*
   static Stream<QuerySnapshot> getChildrenStream(String parentID) {
     return _fireStoreDataBase
         .collection('tasks')
@@ -16,20 +16,44 @@ class Database {
   static Stream<DocumentSnapshot> getTaskStream(String taskID) {
     return _fireStoreDataBase.collection('tasks').doc(taskID).snapshots();
   }
-
-  static moveTask(String taskID) {
-    _fireStoreDataBase.collection("users").doc(taskID).update({
-      "parents": 13,
+*/
+  static moveTask(Task taskToMove, targetTaskID) {
+    taskToMove.parentObjects.forEach((parentObj) => parentObj.parentID = targetTaskID);
+    _fireStoreDataBase.collection("tasks").doc(taskToMove.id).update({
+      "parentObjects": taskToMove.parentObjects.map((e) => e.toJson()).toList(),
+      "parentIDs": [targetTaskID],
     });
   }
 
-  static addTask(String taskName, String parent) {
+  static addTask(String taskName, String parentID) {
     var addTaskData = Map<String, dynamic>();
     addTaskData['title'] = taskName;
-    addTaskData['parents'] = [Parent(userID, parent).toJson()];
-    addTaskData['caseSearch'] = setSearchParam(taskName);
+    addTaskData['parentObjects'] = [Parent(parentID, userID).toJson()];
+    addTaskData['parentIDs'] = [parentID];
+    addTaskData['childrenNumber'] = 0;
+    addTaskData['childrenSum'] = 0;
+    //addTaskData['caseSearch'] = setSearchParam(taskName);
     return _fireStoreDataBase.collection('tasks').add(addTaskData);
   }
+
+  static deleteTask(String taskID) async {
+    _fireStoreDataBase.collection('tasks').doc(taskID).delete();
+  }
+
+  static checkTask(String taskID){
+    _fireStoreDataBase.collection("users").doc(taskID).update({
+
+    });
+  }
+
+  static Future<Task> getTask(String taskID) async {
+    DocumentSnapshot doc =
+    await _fireStoreDataBase.collection('tasks').doc(taskID).get();
+    Task task = Task.fromJson(doc.data());
+    task.id = doc.id;
+    return task;
+  }
+
   static setSearchParam(String taskName){
     List<String> caseSearchList = List();
     String temp = "";
@@ -38,14 +62,6 @@ class Database {
       caseSearchList.add(temp);
     }
     return caseSearchList;
-  }
-
-  static Future<Task> getTask(String taskID) async {
-    DocumentSnapshot doc =
-        await _fireStoreDataBase.collection('tasks').doc(taskID).get();
-    Task task = Task.fromJson(doc.data());
-    task.id = doc.id;
-    return task;
   }
 
   static addUser(AppUser user) async{

@@ -22,14 +22,7 @@ class ParentTaskItem extends StatelessWidget {
       }
     }
 
-    return StreamBuilder(
-        stream: Database.getTaskStream(appState.parentTask.id),
-
-        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          print("yoooooooo:"+snapshot.data.toString());
-          if (snapshot.data != null && snapshot.data.exists) {
-            Task task = Task.fromJson(snapshot.data.data());
-            return Padding(
+    return Padding(
               padding: EdgeInsets.all(7),
               child: Container(
                 decoration: BoxDecoration(
@@ -44,7 +37,7 @@ class ParentTaskItem extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                       child: Text(
-                        task.title,
+                        appState.parentTask.title,
                         style: TextStyle(
                           fontSize: 60.0,
                           letterSpacing: 0.5,
@@ -85,16 +78,6 @@ class ParentTaskItem extends StatelessWidget {
                 ),
               ),
             );
-          }
-          else {
-            return Container(child: Text("root"),);
-          }
-        });
-
-
-
-
-
   }
 
   Widget isCompleted(Task task, num percentage){
@@ -105,7 +88,7 @@ class ParentTaskItem extends StatelessWidget {
       );
     }else
       return Text(
-          (task.percentage * 100).toInt().toString() + "%");
+          (task.getPercentage() * 100).toInt().toString() + "%");
   }
 
 }

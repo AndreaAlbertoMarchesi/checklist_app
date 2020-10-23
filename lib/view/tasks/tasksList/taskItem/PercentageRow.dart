@@ -25,11 +25,11 @@ class PercentageRow extends StatelessWidget {
               child: CircularPercentIndicator(
                 radius: 40.0,
                 lineWidth: 8.0,
-                percent: task.percentage.toDouble(),
+                percent: task.getPercentage(),
                 animation: true,
                 animateFromLastPercent: true,
                 circularStrokeCap: CircularStrokeCap.round,
-                center: isCompleted(task.percentage.toDouble()),
+                center: isCompleted(task.getPercentage().toDouble()),
                 linearGradient: LinearGradient(
                     colors: [
                       Colors.greenAccent[400],
@@ -51,6 +51,6 @@ class PercentageRow extends StatelessWidget {
       );
     }else
       return Text(
-          (task.percentage * 100).toInt().toString() + "%");
+          (task.getPercentage() * 100).toInt().toString() + "%");
   }
 }

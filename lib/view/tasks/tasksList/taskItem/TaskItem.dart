@@ -75,7 +75,7 @@ class TaskItemState extends State<TaskItem> {
           FlatButton(
             child: Text("Yes"),
             onPressed: () {
-              appState.deleteTask(widget.task, appState.taskPath.last);
+              appState.deleteTask(widget.task);
               Navigator.of(context).pop();
             },
           ),

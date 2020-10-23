@@ -42,7 +42,10 @@ class AddButton extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
-                    onPressed: (){}, //appState.moveTask,
+                    onPressed: () {
+                      appState.moveTask();
+                      appState.unDoSelection();
+                    },
                     child: Icon(Icons.drive_file_move),
                     backgroundColor: Colors.greenAccent[400],
                   ),

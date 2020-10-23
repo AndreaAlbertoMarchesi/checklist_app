@@ -12,9 +12,11 @@ flutter pub run build_runner build --delete-conflicting-outputs
 @JsonSerializable(explicitToJson: true)
 class Task {
   String id;
-  List<Parent> parents;
+  List<Parent> parentObjects;
+  List<String> parentIDs;
+  int childrenNumber;
+  num childrenSum;
   String title;
-  num percentage = 0;
 
   static final Task emptyRoot = Task("⌂");
 
@@ -24,11 +26,23 @@ class Task {
 
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 
-  String getParent(String userID) {
-    if(parents!=null)
-      for(var parent in parents) {
-        if (parent.userID == userID)
-          return parent.parent;
+  static Task getRoot() {
+    Task root = Task("⌂");
+    root.id = "root";
+    return root;
+  }
+
+  double getPercentage() {
+    if (childrenSum == 0)
+      return 0;
+    else
+      return (childrenSum / childrenNumber).clamp(0, 1).toDouble();
+  }
+
+  String getParentID(String userID) {
+    if (parentObjects != null)
+      for (var parent in parentObjects) {
+        if (parent.userID == userID) return parent.parentID;
       }
     return null;
   }
@@ -36,10 +50,10 @@ class Task {
 
 @JsonSerializable(explicitToJson: true)
 class Parent {
-  Parent(this.userID, this.parent);
+  Parent(this.parentID, this.userID);
 
+  String parentID;
   String userID;
-  String parent;
 
   factory Parent.fromJson(Map<String, dynamic> json) => _$ParentFromJson(json);
 

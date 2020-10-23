@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:checklist_app/model/AppUser.dart';
 import 'package:checklist_app/services/AuthenticationService.dart';
 import 'package:checklist_app/services/Database.dart';
 import 'package:checklist_app/view/Settings/SharedPreferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +15,13 @@ class AppState extends ChangeNotifier {
   List<Task> taskPath = List<Task>();
 
   List<Task> tasks = List<Task>();
-  Task parentTask = Task(null);
+  Task parentTask = Task.getRoot();
 
   List<Task> selectedListOfTasks = [];
   List<List<Task>> selectedListOfTasksPath = [];
+
+  StreamSubscription<QuerySnapshot> childrenListener;
+  StreamSubscription<DocumentSnapshot> parentListener;
 
   AppUser appUser = new AppUser(email: "Anonymous", uid: "Anonymous",photoURL: "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png");
   final AuthenticationService _auth = AuthenticationService();
@@ -24,20 +30,42 @@ class AppState extends ChangeNotifier {
 
   AppState(){
     getUserPreferences();
+    childrenListener = listenToChildren();
   }
 
   openTask(Task task){
     parentTask = task;
+    resetDatabaseListeners();
     notifyListeners();
+  }
+
+  backToPreviousTask() async {
+    if(parentTask.id != Task.getRoot().id) {
+      if (parentTask.getParentID("userID") != Task
+          .getRoot()
+          .id)
+        parentTask = await Database.getTask(parentTask.getParentID("userID"));
+      else
+        parentTask = Task.getRoot();
+
+      resetDatabaseListeners();
+      notifyListeners();
+    }
   }
 
   addTask(String name){
     Database.addTask(name, parentTask.id);
-    notifyListeners();
+  }
+
+  deleteTask(Task taskToDelete){
+    Database.deleteTask(taskToDelete.id);
+  }
+
+  void moveTask() {
+    Database.moveTask(selectedListOfTasks.first, parentTask.id);
   }
 
   void selectTask(Task task) {
-
     if(!selectedListOfTasks.contains(task)) {
       selectedListOfTasks.add(task);
       List<Task> cloneOfTaskPath = new List<Task>.from(taskPath);
@@ -52,40 +80,43 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  backToPreviousTask() async {
-    if (parentTask.getParent("userID")!=null) {
-      parentTask = await Database.getTask(parentTask.getParent("userID"));
-      notifyListeners();
-    }
-  }
+
 
   void backToRoot() {
     notifyListeners();
   }
 
-  void moveTask() async {
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'moveTask',
-    )..timeout = const Duration(seconds: 30);
+  void resetDatabaseListeners(){
+    if(parentListener!=null)
+      parentListener.cancel();
+    if(parentTask.id!="root")
+      parentListener = listenToParent();
 
-    dynamic resp = await callable.call(<String, dynamic>{
-      "selectedTask": '${selectedListOfTasks.first.id}',
-      "parentTask": '${parentTask.id}',
-    });
-
-    print(resp.data['repeat_message'].toString());
+    childrenListener.cancel();
+    childrenListener = listenToChildren();
   }
 
-  void deleteTask(Task currentTask) async {
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'deleteTask',
-    )..timeout = const Duration(seconds: 30);
 
-    dynamic resp = await callable.call(<String, dynamic>{
-      "selectedTask" : '${currentTask.id}',
+  StreamSubscription<DocumentSnapshot> listenToParent(){
+    return FirebaseFirestore.instance.collection('tasks').doc(parentTask.id).snapshots().listen((doc) {
+      Task task = Task.fromJson(doc.data());
+      task.id = doc.id;
+      parentTask = task;
+      notifyListeners();
     });
+  }
 
-    print(resp.data['repeat_message'].toString());
+  StreamSubscription<QuerySnapshot> listenToChildren(){
+    return FirebaseFirestore.instance.collection('tasks')
+        .where("parentObjects", arrayContains: Parent(parentTask.id, "userID").toJson())
+        .snapshots().listen((snap) {
+      tasks = snap.docs.map((document) {
+        Task task = Task.fromJson(document.data());
+        task.id = document.id;
+        return task;
+      }).toList();
+      notifyListeners();
+    });
   }
 
 
