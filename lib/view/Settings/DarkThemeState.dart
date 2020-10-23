@@ -6,8 +6,14 @@ class DarkThemeState with ChangeNotifier {
   DarkThemePreference darkThemePreference = DarkThemePreference();
   bool darkTheme = false;
 
-  getDarkTheme() async{
+  DarkThemeState(){
+    getTheme();
+  }
+
+  getTheme() async {
     darkTheme = await darkThemePreference.getTheme();
+    if(darkTheme == null)
+        darkTheme = false;
     notifyListeners();
   }
 

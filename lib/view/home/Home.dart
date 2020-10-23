@@ -2,6 +2,7 @@ import 'package:checklist_app/controller/Search.dart';
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/Settings/DarkThemeState.dart';
+import 'package:checklist_app/view/Settings/SharedPreferences.dart';
 import 'package:checklist_app/view/Settings/Styles.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
 import 'package:checklist_app/view/home/SideMenu.dart';
@@ -20,13 +21,6 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
 
-  DarkThemeState darkThemeState = new DarkThemeState();
-
-  @override
-  void initState() {
-    super.initState();
-    darkThemeState.getDarkTheme();
-  }
 
 
   @override
@@ -75,10 +69,5 @@ class HomeState extends State<Home> {
         ),
       ),
     );
-  }
-
-
-  Stream getStream(){
-
   }
 }

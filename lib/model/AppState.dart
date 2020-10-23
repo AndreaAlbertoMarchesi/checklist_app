@@ -1,6 +1,8 @@
 import 'package:checklist_app/model/AppUser.dart';
 import 'package:checklist_app/services/AuthenticationService.dart';
 import 'package:checklist_app/services/Database.dart';
+import 'package:checklist_app/view/Settings/SharedPreferences.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,12 @@ class AppState extends ChangeNotifier {
 
   AppUser appUser = new AppUser(email: "Anonymous", uid: "Anonymous",photoURL: "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png");
   final AuthenticationService _auth = AuthenticationService();
+  final UserPreference userPreference = new UserPreference();
+
+
+  AppState(){
+    getUserPreferences();
+  }
 
   openTask(Task task){
     parentTask = task;
@@ -55,20 +63,58 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void moveTask() async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'moveTask',
+    )..timeout = const Duration(seconds: 30);
+
+    dynamic resp = await callable.call(<String, dynamic>{
+      "selectedTask": '${selectedListOfTasks.first.id}',
+      "parentTask": '${parentTask.id}',
+    });
+
+    print(resp.data['repeat_message'].toString());
+  }
+
+  void deleteTask(Task currentTask) async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'deleteTask',
+    )..timeout = const Duration(seconds: 30);
+
+    dynamic resp = await callable.call(<String, dynamic>{
+      "selectedTask" : '${currentTask.id}',
+    });
+
+    print(resp.data['repeat_message'].toString());
+  }
+
+
+
+
+  Future<void> getUserPreferences() async{
+    appUser = await userPreference.getUser();
+    if(appUser == null){
+      appUser = new AppUser(email: "Anonymous", uid: "Anonymous",
+          photoURL: "https://icon-library.com/images/profile-42914__340.png");
+    }
+  }
 
   Future<void> signInWithGoogle() async{
     AppUser user = await _auth.signInWithGoogle();
     if( user != null ){
       appUser = user;
       Database.addUser(appUser);
+      await userPreference.setUser(appUser);
     }
     notifyListeners();
   }
 
   Future<void> signInWithEmailAndPassword(String email, String password) async{
     AppUser user = await _auth.signInWithEmailAndPassword(email, password, appUser.photoURL);
-    if(user != null)
+    if(user != null) {
       appUser = user;
+      await userPreference.setUser(appUser);
+    }
     notifyListeners();
   }
 
@@ -78,6 +124,7 @@ class AppState extends ChangeNotifier {
     if( user != null ){
       Database.addUser(user);
       appUser = user;
+      await userPreference.setUser(appUser);
     }
     notifyListeners();
   }
@@ -86,7 +133,8 @@ class AppState extends ChangeNotifier {
     await _auth.signOut();
     appUser.email = "Anonymous";
     appUser.uid = "Anonymous";
-    appUser.photoURL = "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png";
+    appUser.photoURL = "https://icon-library.com/images/profile-42914__340.png";
+    await userPreference.setUser(appUser);
     notifyListeners();
   }
 
