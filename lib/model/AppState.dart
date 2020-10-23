@@ -23,28 +23,25 @@ class AppState extends ChangeNotifier {
   StreamSubscription<QuerySnapshot> childrenListener;
   StreamSubscription<DocumentSnapshot> parentListener;
 
-  AppUser appUser = new AppUser(email: "Anonymous", uid: "Anonymous",photoURL: "https://www.pngitem.com/pimgs/m/524-5246388_anonymous-user-hd-png-download.png");
+  AppUser appUser;
   final AuthenticationService _auth = AuthenticationService();
   final UserPreference userPreference = new UserPreference();
 
-
-  AppState(){
-    getUserPreferences();
-    childrenListener = listenToChildren();
+  AppState() {
+    getUserPreferences().then((value) => childrenListener = listenToChildren());
   }
 
-  openTask(Task task){
+  openTask(Task task) {
     parentTask = task;
     resetDatabaseListeners();
     notifyListeners();
   }
 
   backToPreviousTask() async {
-    if(parentTask.id != Task.getRoot().id) {
-      if (parentTask.getParentID("userID") != Task
-          .getRoot()
-          .id)
-        parentTask = await Database.getTask(parentTask.getParentID("userID"));
+    if (parentTask.id != Task.getRoot().id) {
+      String parentID = parentTask.getParentID(appUser.uid);
+      if (parentID != Task.getRoot().id)
+        parentTask = await Database.getTask(parentID);
       else
         parentTask = Task.getRoot();
 
@@ -53,20 +50,20 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  addTask(String name){
-    Database.addTask(name, parentTask.id);
+  addTask(String name) {
+    Database.addTask(name, parentTask.id, appUser.uid);
   }
 
-  deleteTask(Task taskToDelete){
+  deleteTask(Task taskToDelete) {
     Database.deleteTask(taskToDelete.id);
   }
 
   void moveTask() {
-    Database.moveTask(selectedListOfTasks.first, parentTask.id);
+    Database.moveTask(selectedListOfTasks.first, parentTask.id, appUser.uid);
   }
 
   void selectTask(Task task) {
-    if(!selectedListOfTasks.contains(task)) {
+    if (!selectedListOfTasks.contains(task)) {
       selectedListOfTasks.add(task);
       List<Task> cloneOfTaskPath = new List<Task>.from(taskPath);
       selectedListOfTasksPath.add(cloneOfTaskPath);
@@ -80,36 +77,45 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   void backToRoot() {
     notifyListeners();
   }
 
-  void resetDatabaseListeners(){
-    if(parentListener!=null)
-      parentListener.cancel();
-    if(parentTask.id!="root")
-      parentListener = listenToParent();
+  void resetDatabaseListeners() {
+    if (parentListener != null) parentListener.cancel();
+    if (parentTask.id != "root") parentListener = listenToParent();
 
     childrenListener.cancel();
     childrenListener = listenToChildren();
   }
 
-
-  StreamSubscription<DocumentSnapshot> listenToParent(){
-    return FirebaseFirestore.instance.collection('tasks').doc(parentTask.id).snapshots().listen((doc) {
-      Task task = Task.fromJson(doc.data());
-      task.id = doc.id;
-      parentTask = task;
-      notifyListeners();
+  StreamSubscription<DocumentSnapshot> listenToParent() {
+    return FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(parentTask.id)
+        .snapshots()
+        .listen((doc) {
+          if(doc.exists) {
+            Task task = Task.fromJson(doc.data());
+            task.id = doc.id;
+            parentTask = task;
+          }
+          else{
+            //item s been deleted
+            parentTask = Task.getRoot();
+            resetDatabaseListeners();
+          }
+          notifyListeners();
     });
   }
 
-  StreamSubscription<QuerySnapshot> listenToChildren(){
-    return FirebaseFirestore.instance.collection('tasks')
-        .where("parentObjects", arrayContains: Parent(parentTask.id, "userID").toJson())
-        .snapshots().listen((snap) {
+  StreamSubscription<QuerySnapshot> listenToChildren() {
+    return FirebaseFirestore.instance
+        .collection('tasks')
+        .where("parentObjects",
+            arrayContains: Parent(parentTask.id, appUser.uid).toJson())
+        .snapshots()
+        .listen((snap) {
       tasks = snap.docs.map((document) {
         Task task = Task.fromJson(document.data());
         task.id = document.id;
@@ -119,20 +125,19 @@ class AppState extends ChangeNotifier {
     });
   }
 
-
-
-
-  Future<void> getUserPreferences() async{
+  Future<void> getUserPreferences() async {
     appUser = await userPreference.getUser();
-    if(appUser == null){
-      appUser = new AppUser(email: "Anonymous", uid: "Anonymous",
+    if (appUser == null) {
+      appUser = new AppUser(
+          email: "Anonymous",
+          uid: "Anonymous",
           photoURL: "https://icon-library.com/images/profile-42914__340.png");
     }
   }
 
-  Future<void> signInWithGoogle() async{
+  Future<void> signInWithGoogle() async {
     AppUser user = await _auth.signInWithGoogle();
-    if( user != null ){
+    if (user != null) {
       appUser = user;
       Database.addUser(appUser);
       await userPreference.setUser(appUser);
@@ -140,19 +145,20 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signInWithEmailAndPassword(String email, String password) async{
-    AppUser user = await _auth.signInWithEmailAndPassword(email, password, appUser.photoURL);
-    if(user != null) {
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    AppUser user = await _auth.signInWithEmailAndPassword(
+        email, password, appUser.photoURL);
+    if (user != null) {
       appUser = user;
       await userPreference.setUser(appUser);
     }
     notifyListeners();
   }
 
-  Future<void> registerWithEmailAndPsw(String email, String password) async{
-
-    AppUser user = await _auth.registerWithEmailAndPassword(email, password, appUser.photoURL);
-    if( user != null ){
+  Future<void> registerWithEmailAndPsw(String email, String password) async {
+    AppUser user = await _auth.registerWithEmailAndPassword(
+        email, password, appUser.photoURL);
+    if (user != null) {
       Database.addUser(user);
       appUser = user;
       await userPreference.setUser(appUser);
@@ -169,17 +175,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  ///possiblie toast bar per notificare l'invio
-  Future<void> share(Task task, String email) async{
+  Future<void> share(Task task, String email) async {
     bool found = await Database.share(task, email);
-    if(found){
+    if (found) {
       print("faccio notifica positiva");
-    }else
+    } else
       print("qualcosa è andato storto");
   }
 
-
-  /*void updateTaskPathPercentage(List<Task> tp) {
+/*void updateTaskPathPercentage(List<Task> tp) {
     tp.reversed.forEach((task) {
       task.updatePercentage();
     });
