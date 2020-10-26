@@ -8,8 +8,9 @@ class AppUser {
   String email;
   String uid;
   String photoURL;
+  bool isAnon;
 
-  AppUser({this.email, this.uid, this.photoURL});
+  AppUser({this.email, this.uid, this.photoURL, this.isAnon});
 
 
   factory AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);

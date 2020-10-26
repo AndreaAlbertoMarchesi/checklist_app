@@ -9,21 +9,23 @@ class AuthenticationService {
 
   User currentUser;
   GoogleSignInAccount googleUser;
+  static const PHOTO_ANON = "https://icon-library.com/images/profile-42914__340.png";
 
   // create user obj based on firebase user
   AppUser _userFromFirebaseUser(String photoURL) {
     if(googleUser != null){
       return AppUser(uid: googleUser.id, email: googleUser.email, photoURL: photoURL);
     }else{
-      return currentUser != null ? AppUser(uid: currentUser.uid, email: currentUser.email, photoURL: photoURL) : null;
+      return currentUser.isAnonymous ? AppUser(uid: currentUser.uid, email: "Anonymous User", photoURL: photoURL, isAnon: true)
+                                        : AppUser(uid: currentUser.uid, email: currentUser.email, photoURL: photoURL, isAnon: false);
     }
 
   }
 
   //this method for later
-  void _verifyEmail(User user) async {
-    if (!user.emailVerified) {
-      await user.sendEmailVerification();
+  void _verifyEmail() async {
+    if (!currentUser.emailVerified) {
+      await currentUser.sendEmailVerification();
     }
     // Get the code from the email:
     String code = 'xxxxxxx';
@@ -41,13 +43,35 @@ class AuthenticationService {
     }
   }
 
+
+  Future<AppUser> signInAnonymously()async{
+    try {
+      UserCredential userCredential = await _firebaseAuth.signInAnonymously();
+      currentUser = userCredential.user;
+      return _userFromFirebaseUser(PHOTO_ANON);
+    }on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+    return null;
+  }
+
   // sign in with email and password
   Future<AppUser> signInWithEmailAndPassword(String email, String password, String photoUrl) async {
     try {
+
+      deleteUser();
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
-      currentUser = userCredential.user;
-      return _userFromFirebaseUser(photoUrl);
+      //if(userCredential.user.emailVerified) {
+        currentUser = userCredential.user;
+        return _userFromFirebaseUser(photoUrl);
+      //}
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -58,15 +82,17 @@ class AuthenticationService {
     return null;
   }
 
-  Future<AppUser> registerWithEmailAndPassword(String email, String password,String photoUrl ) async {
+  Future<AppUser> registerWithEmailAndPassword(String email, String password) async {
+
     try {
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      currentUser = userCredential.user;
 
-      ///_verifyEmail(user);
+      final credential = EmailAuthProvider.credential(email: email, password: password);
+      await currentUser.linkWithCredential(credential);
+      currentUser = _firebaseAuth.currentUser;
 
-      return _userFromFirebaseUser(photoUrl);
+      _verifyEmail();
+
+      return _userFromFirebaseUser(PHOTO_ANON);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -80,17 +106,19 @@ class AuthenticationService {
   }
 
   // sign out
-  Future<void> signOut() async {
+  Future<AppUser> signOut() async {
     if(googleUser != null){
       signOutGoogle();
     }else {
       try {
-        return await _firebaseAuth.signOut();
+        await _firebaseAuth.signOut();
+        return signInAnonymously();
       } catch (error) {
         print(error.toString());
         return null;
       }
     }
+    return null;
   }
 
   Future<AppUser> signInWithGoogle() async{

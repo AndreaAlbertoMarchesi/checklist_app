@@ -22,7 +22,7 @@ class _AuthenticateState extends State<Authenticate> {
 
     final appState = context.watch<AppState>();
 
-    if(appState.appUser.uid == "Anonymous") {
+    if(appState.appUser.isAnon) {
       if (showSignIn) {
         return SignIn(toggleView: toggleView);
       } else {

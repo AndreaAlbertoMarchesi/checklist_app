@@ -69,15 +69,13 @@ class Database {
   }
 
   static addUser(AppUser user) async {
-    ///todo controlla che non ci sia già un utente con lo stesso nome nel database
     if (user != null) {
-      final QuerySnapshot querySnapshot = await _fireStoreDataBase
+      final DocumentSnapshot doc = await _fireStoreDataBase
           .collection("users")
-          .where("userID", isEqualTo: user.uid)
+          .doc(user.uid)
           .get();
-      final List<DocumentSnapshot> docs = querySnapshot.docs;
 
-      if (docs.length == 0) {
+      if (!doc.exists) {
         _fireStoreDataBase.collection('users').doc(user.uid).set({
           "email": user.email,
           "photoURL": user.photoURL,
@@ -88,6 +86,31 @@ class Database {
     } else {
       print("the user from auth is null");
     }
+  }
+
+  static void fromAnonToUser(AppUser oldUser, AppUser newUser) async{
+    if (oldUser != null) {
+         _fireStoreDataBase.collection('users').doc(oldUser.uid).update({
+            "email" : newUser.email,
+            "photoURL" : newUser.photoURL,
+        });
+    } else {
+      print("the oldUser was null");
+    }
+
+  }
+
+  static void deleteUser(AppUser user){
+
+    if(user != null){
+      _fireStoreDataBase.collection('users').doc(user.uid).delete();
+      ///todo da eliminare anche le task associate
+      _fireStoreDataBase.collection('tasks').doc(user.uid).delete();
+
+
+
+    }
+
   }
 
   static Future<bool> share(Task task, String email) async {

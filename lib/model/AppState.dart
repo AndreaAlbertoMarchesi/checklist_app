@@ -135,10 +135,9 @@ class AppState extends ChangeNotifier {
   Future<void> getUserPreferences() async {
     appUser = await userPreference.getUser();
     if (appUser == null) {
-      appUser = new AppUser(
-          email: "Anonymous",
-          uid: "Anonymous",
-          photoURL: "https://icon-library.com/images/profile-42914__340.png");
+      appUser = await _auth.signInAnonymously();
+      Database.addUser(appUser);
+      await userPreference.setUser(appUser);
     }
   }
 
@@ -156,6 +155,7 @@ class AppState extends ChangeNotifier {
     AppUser user = await _auth.signInWithEmailAndPassword(
         email, password, appUser.photoURL);
     if (user != null) {
+      Database.deleteUser(appUser);
       appUser = user;
       await userPreference.setUser(appUser);
     }
@@ -163,22 +163,23 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> registerWithEmailAndPsw(String email, String password) async {
-    AppUser user = await _auth.registerWithEmailAndPassword(
-        email, password, appUser.photoURL);
-    if (user != null) {
-      Database.addUser(user);
-      appUser = user;
+    AppUser newUser = await _auth.registerWithEmailAndPassword(
+        email, password);
+    if (newUser != null) {
+      Database.fromAnonToUser(appUser,newUser);
+      appUser = newUser;
       await userPreference.setUser(appUser);
     }
     notifyListeners();
   }
 
   void signOut() async {
-    await _auth.signOut();
-    appUser.email = "Anonymous";
-    appUser.uid = "Anonymous";
-    appUser.photoURL = "https://icon-library.com/images/profile-42914__340.png";
-    await userPreference.setUser(appUser);
+    AppUser newUser = await _auth.signOut();
+    if(newUser != null) {
+      appUser = newUser;
+      Database.addUser(appUser);
+      await userPreference.setUser(appUser);
+    }
     notifyListeners();
   }
 
