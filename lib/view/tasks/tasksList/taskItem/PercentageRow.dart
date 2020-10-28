@@ -1,4 +1,5 @@
 import 'package:checklist_app/model/Task.dart';
+import 'package:checklist_app/view/home/ShareDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -8,8 +9,19 @@ class PercentageRow extends StatelessWidget {
 
   final Task task;
 
+
+
   @override
   Widget build(BuildContext context) {
+
+    share(){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ShareDialog(task);
+        },
+      );
+    }
 
     return Container(
       child: ConstrainedBox(
@@ -20,6 +32,12 @@ class PercentageRow extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: Text(task.title)),
             Expanded(child: Container()),
+            IconButton(
+                icon: Icon(Icons.share_outlined),
+                onPressed: (){
+                  share();
+                }
+            ),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
               child: CircularPercentIndicator(
@@ -32,8 +50,8 @@ class PercentageRow extends StatelessWidget {
                 center: isCompleted(task.getPercentage().toDouble()),
                 linearGradient: LinearGradient(
                     colors: [
-                      Colors.greenAccent[400],
-                      Colors.red,
+                      Colors.green,
+                      Colors.lightGreen,
                     ]
                 ),
               ),

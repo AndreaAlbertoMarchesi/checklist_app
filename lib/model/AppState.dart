@@ -50,15 +50,15 @@ class AppState extends ChangeNotifier {
   }
 
   addTask(String name) {
-    Database.addTask(name, parentTask.id, appUser.uid);
+    Database.addTask(name, parentTask, appUser.uid);
   }
 
   deleteTask(Task taskToDelete) {
-    Database.deleteTask(taskToDelete.id);
+    Database.deleteTask(taskToDelete, appUser.uid);
   }
 
   void moveTask() {
-    Database.moveTask(selectedListOfTasks.first, parentTask.id, appUser.uid);
+    Database.moveTask(selectedListOfTasks.first, parentTask, appUser.uid);
   }
 
   void checkTask(Task task){
@@ -184,7 +184,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> share(Task task, String email) async {
-    bool found = await Database.share(task, email);
+    bool found = await Database.shareTaskTree(task, email, appUser.uid);
     if (found) {
       print("faccio notifica positiva");
     } else
