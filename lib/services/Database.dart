@@ -17,37 +17,66 @@ class Database {
     return _fireStoreDataBase.collection('tasks').doc(taskID).snapshots();
   }
 */
-  static moveTask(Task taskToMove,String targetTaskID, String userID) {
+  static moveTask(Task taskToMove, Task targetTask, String userID) {
     String currentParentID = taskToMove.getParentID(userID);
+
+    taskToMove.parentIDs.remove(currentParentID);
+    _addToPercentage(currentParentID, -1,
+        -(taskToMove.childrenSum / taskToMove.childrenNumber));
+    taskToMove.parentIDs.add(targetTask.id);
+    _addToPercentage(
+        targetTask.id, 1, (taskToMove.childrenSum / taskToMove.childrenNumber));
+
     taskToMove.parentObjects.forEach((parentObj) {
-      if(parentObj.parentID == currentParentID && parentObj.parentID != Task.getRoot().id)
-        parentObj.parentID = targetTaskID;
+      if (parentObj.userID == userID)
+        parentObj.parentID = targetTask.id;
+      else if (parentObj.parentID == currentParentID &&
+          parentObj.parentID != Task.getRoot().id) {
+        parentObj.parentID = targetTask.id;
+      }
     });
     _fireStoreDataBase.collection("tasks").doc(taskToMove.id).update({
       "parentObjects": taskToMove.parentObjects.map((e) => e.toJson()).toList(),
-      "parentIDs": [targetTaskID],
+      "parentIDs": taskToMove.parentIDs,
     });
   }
 
-  static addTask(String taskName, String parentID, String userID) {
+  static addTask(String taskName, Task parentTask, String userID) {
+    var parentObjects = parentTask.parentObjects.map((parent) {
+      parent.parentID = parentTask.id;
+      return parent.toJson();
+    });
     var addTaskData = Map<String, dynamic>();
     addTaskData['title'] = taskName;
-    addTaskData['parentObjects'] = [Parent(parentID, userID).toJson()];
-    addTaskData['parentIDs'] = [parentID];
+    addTaskData['parentObjects'] = parentObjects.toList();
+    addTaskData['parentIDs'] = [parentTask.id];
     addTaskData['childrenNumber'] = 0;
     addTaskData['childrenSum'] = 0;
+    addTaskData['readers'] = [userID];
+    addTaskData['writers'] = [userID];
     //addTaskData['caseSearch'] = setSearchParam(taskName);
     return _fireStoreDataBase.collection('tasks').add(addTaskData);
   }
 
+/*
   static deleteTask(String taskID) async {
     _fireStoreDataBase.collection('tasks').doc(taskID).delete();
-  }
+  }*/
 
   static checkTask(Task task) {
     _fireStoreDataBase.collection("tasks").doc(task.id).update({
       "childrenSum": task.childrenSum,
     });
+  }
+
+  static _addToPercentage(
+      String taskID, num childrenNumber, num childPercentage) {
+    if (taskID != Task.getRoot().id) {
+      _fireStoreDataBase.collection("tasks").doc(taskID).update({
+        "childrenNumber": FieldValue.increment(childrenNumber),
+        "childrenSum": FieldValue.increment(childPercentage)
+      });
+    }
   }
 
   static Future<Task> getTask(String taskID) async {
@@ -90,7 +119,26 @@ class Database {
     }
   }
 
-  static Future<bool> share(Task task, String email) async {
+  static deleteTask(Task task, String userID) {
+    _fireStoreDataBase.collection("tasks").doc(task.id).update({
+      "parentObjects": FieldValue.arrayRemove(
+          [Parent(task.getParentID(userID), userID).toJson()]),
+    }).catchError((error) => print(error));
+    _fireStoreDataBase
+        .collection("tasks")
+        .where("parentObjects", arrayContains: Parent(task.id, userID).toJson())
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((docSnap) {
+        Task child = Task.fromJson(docSnap.data());
+        child.id = docSnap.id;
+        deleteTask(child, userID);
+      });
+    });
+  }
+
+  static Future<bool> shareTaskTree(
+      Task task, String email, String userID) async {
     //create a new document of a task with id of the new user and a collection of users data?
     final QuerySnapshot querySnapshot = await _fireStoreDataBase
         .collection("users")
@@ -104,14 +152,31 @@ class Database {
       });
 
       ///todo associare una task a uno user
-      DocumentSnapshot userRef = docs.first;
-      task.parentObjects.add(Parent(Task.getRoot().id, userRef.id));
-      _fireStoreDataBase.collection("tasks").doc(task.id).update({
-        "parentObjects": task.parentObjects.map((e) => e.toJson()).toList(),
-        "parentIDs": FieldValue.arrayUnion(task.parentIDs),
-      });
+      String receivingUserID = docs.first.id;
+      DocumentReference taskRef =
+          _fireStoreDataBase.collection("tasks").doc(task.id);
+      _shareTask(taskRef, "root", receivingUserID, userID);
       return true;
     }
     return false;
+  }
+
+  static _shareTask(DocumentReference doc, String parentID,
+      String receivingUserID, String userID) {
+    doc.update({
+      "parentObjects":
+          FieldValue.arrayUnion([Parent(parentID, receivingUserID).toJson()]),
+      "readers": [receivingUserID],
+    }).catchError((error) => print(error));
+    print("ok");
+    _fireStoreDataBase
+        .collection("tasks")
+        .where("parentObjects", arrayContains: Parent(doc.id, userID).toJson())
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((docSnap) {
+        _shareTask(docSnap.reference, doc.id, receivingUserID, userID);
+      });
+    });
   }
 }
