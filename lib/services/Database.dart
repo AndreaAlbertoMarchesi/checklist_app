@@ -42,13 +42,13 @@ class Database {
   }
 
   static addTask(String taskName, Task parentTask, String userID) {
-    var parentObjects = parentTask.parentObjects.map((parent) {
+    /*var parentObjects = parentTask.parentObjects.map((parent) {
       parent.parentID = parentTask.id;
       return parent.toJson();
-    });
+    });*/
     var addTaskData = Map<String, dynamic>();
     addTaskData['title'] = taskName;
-    addTaskData['parentObjects'] = parentObjects.toList();
+    addTaskData['parentObjects'] = [Parent(parentTask.id, userID).toJson()];
     addTaskData['parentIDs'] = [parentTask.id];
     addTaskData['childrenNumber'] = 0;
     addTaskData['childrenSum'] = 0;
@@ -87,7 +87,7 @@ class Database {
     return task;
   }
 
-  static setSearchParam(String taskName) {
+  /*static setSearchParam(String taskName) {
     List<String> caseSearchList = List();
     String temp = "";
     for (int i = 0; i < taskName.length; i++) {
@@ -95,7 +95,7 @@ class Database {
       caseSearchList.add(temp);
     }
     return caseSearchList;
-  }
+  }*/
 
   static addUser(AppUser user) async {
     if (user != null) {
@@ -134,12 +134,9 @@ class Database {
     if(user != null){
       _fireStoreDataBase.collection('users').doc(user.uid).delete();
       ///todo da eliminare anche le task associate
-      _fireStoreDataBase.collection('tasks').doc(user.uid).delete();
-
-
+     /// _fireStoreDataBase.collection('tasks').doc(user.uid).delete();
 
     }
-
   }
 
   static deleteTask(Task task, String userID) {
@@ -158,9 +155,9 @@ class Database {
         deleteTask(child, userID);
       });
     });
+  }
 
-  static Future<bool> shareTaskTree(
-      Task task, String email, String userID) async {
+  static Future<bool> shareTaskTree( Task task, String email, String userID) async {
     //create a new document of a task with id of the new user and a collection of users data?
     final QuerySnapshot querySnapshot = await _fireStoreDataBase
         .collection("users")
@@ -182,6 +179,21 @@ class Database {
     }
     return false;
   }
+
+  static Stream<QuerySnapshot> search(String title, String userID){
+    if(title != "" && title != null){
+      return _fireStoreDataBase.collection('tasks')
+           .orderBy('title')
+           .startAt([title])
+           .endAt([title + '\uf8ff'])
+           .snapshots();
+    }else{
+      return _fireStoreDataBase.collection('tasks').snapshots();
+    }
+
+  }
+
+
 
   static _shareTask(DocumentReference doc, String parentID,
       String receivingUserID, String userID) {

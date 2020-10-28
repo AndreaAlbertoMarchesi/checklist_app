@@ -64,11 +64,10 @@ class AuthenticationService {
   // sign in with email and password
   Future<AppUser> signInWithEmailAndPassword(String email, String password, String photoUrl) async {
     try {
-
-      deleteUser();
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
       //if(userCredential.user.emailVerified) {
+        deleteUser();
         currentUser = userCredential.user;
         return _userFromFirebaseUser(photoUrl);
       //}
@@ -78,8 +77,8 @@ class AuthenticationService {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
+      return null;
     }
-    return null;
   }
 
   Future<AppUser> registerWithEmailAndPassword(String email, String password) async {
@@ -90,7 +89,7 @@ class AuthenticationService {
       await currentUser.linkWithCredential(credential);
       currentUser = _firebaseAuth.currentUser;
 
-      _verifyEmail();
+      //_verifyEmail();
 
       return _userFromFirebaseUser(PHOTO_ANON);
     } on FirebaseAuthException catch (e) {
@@ -109,6 +108,7 @@ class AuthenticationService {
   Future<AppUser> signOut() async {
     if(googleUser != null){
       signOutGoogle();
+      return signInAnonymously();
     }else {
       try {
         await _firebaseAuth.signOut();
@@ -118,7 +118,6 @@ class AuthenticationService {
         return null;
       }
     }
-    return null;
   }
 
   Future<AppUser> signInWithGoogle() async{
@@ -130,6 +129,7 @@ class AuthenticationService {
       accessToken: googleSignInAuthentication.accessToken,
       idToken: googleSignInAuthentication.idToken,
     );
+    deleteUser();
     final UserCredential authResult = await _firebaseAuth.signInWithCredential(credential);
     final User user = authResult.user;
 
@@ -143,8 +143,8 @@ class AuthenticationService {
       print('signInWithGoogle succeeded: $user');
 
       return _userFromFirebaseUser(user.photoURL);
-    }
-    return null;
+    }else
+      return null;
   }
 
   Future<void> signOutGoogle() async {

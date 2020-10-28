@@ -183,7 +183,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> share(Task task, String email) async {
+  Future<void> share(Task task, String email, String comment) async {
     bool found = await Database.shareTaskTree(task, email, appUser.uid);
     if (found) {
       print("faccio notifica positiva");

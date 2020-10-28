@@ -1,3 +1,6 @@
+import 'package:checklist_app/model/AppState.dart';
+import 'package:checklist_app/services/Database.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,6 +14,7 @@ class _CloudFirestoneSearchState extends State<CloudFirestoneSearch> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -32,12 +36,7 @@ class _CloudFirestoneSearchState extends State<CloudFirestoneSearch> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: (title != "" && title != null)
-            ? FirebaseFirestore.instance
-                .collection('tasks')
-                .where("caseSearch", arrayContains: title)
-                .snapshots()
-            : FirebaseFirestore.instance.collection("tasks").snapshots(),
+        stream: Database.search(title, appState.appUser.uid),
         builder: (context, snapshot) {
           return (snapshot.connectionState == ConnectionState.waiting)
               ? Center(child: CircularProgressIndicator())

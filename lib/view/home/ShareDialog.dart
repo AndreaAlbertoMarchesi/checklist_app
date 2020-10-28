@@ -18,6 +18,7 @@ class ShareDialog extends StatelessWidget {
     final _formKey = GlobalKey<FormState>();
     final appState = context.watch<AppState>();
     String email = '';
+    String comment = '';
 
     Widget doneButton(context) {
       return FlatButton(
@@ -28,12 +29,12 @@ class ShareDialog extends StatelessWidget {
       );
     }
 
-    Widget addButton(context) {
+    Widget shareButton(context) {
       return FlatButton(
         child: Text("Share"),
-        onPressed: () {
+        onPressed: () async{
           if (_formKey.currentState.validate()) {
-            appState.share(task ,email );
+            await appState.share(task, email , comment);
             Navigator.of(context).pop();
           } else {
             Vibration.vibrate(duration: 100);
@@ -45,27 +46,54 @@ class ShareDialog extends StatelessWidget {
     return AlertDialog(
       title: Form(
         key: _formKey,
-        child: TextFormField(
-          decoration: InputDecoration(
-            hintText: "Enter email",
-            filled: true,
-            contentPadding: EdgeInsets.all(12.0),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Enter email",
+                  filled: true,
+                  contentPadding: EdgeInsets.all(12.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan[400], width: 2.0),
+                  ),
+                ),
+                validator: (val) => val.isEmpty ? 'Enter a valid email' : null,
+                onChanged: (val) {
+                  email = val;
+                },
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.cyan[400], width: 2.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Enter comment",
+                  filled: true,
+                  contentPadding: EdgeInsets.all(12.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan[100], width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan[400], width: 2.0),
+                  ),
+                ),
+                validator: (val) => val.isEmpty ? 'Enter a not empty comment' : null,
+                onChanged: (val) {
+                  comment = val;
+                },
+              ),
             ),
-          ),
-          validator: (val) => val.isEmpty ? 'Enter a valid email' : null,
-          onChanged: (val) {
-            email = val;
-          },
-        ),
+          ],
+        )
       ),
       actions: [
         doneButton(context),
-        addButton(context),
+        shareButton(context),
       ],
     );
   }

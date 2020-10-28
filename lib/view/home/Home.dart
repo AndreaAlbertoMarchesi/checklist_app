@@ -1,8 +1,7 @@
-import 'package:checklist_app/controller/Search.dart';
+import 'package:checklist_app/controller/CloudFirestoneSearch.dart';
 import 'package:checklist_app/controller/Storage.dart';
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/view/Settings/DarkThemeState.dart';
-import 'package:checklist_app/view/Settings/SharedPreferences.dart';
 import 'package:checklist_app/view/Settings/Styles.dart';
 import 'package:checklist_app/view/home/AddButton.dart';
 import 'package:checklist_app/view/home/SideMenu.dart';
@@ -42,7 +41,9 @@ class HomeState extends State<Home> {
                 builder:(context) => IconButton(
                     icon: Icon(Icons.search),
                     onPressed: (){
-                      showSearch(context: context, delegate: Search());
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => CloudFirestoneSearch())
+                      );
                     }
                 ),
               ),
@@ -56,12 +57,14 @@ class HomeState extends State<Home> {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              TaskPath(),
-              ParentTaskItem(),
-              TasksList(),
-            ],
+          body: Builder(
+            builder:(context)=> Column(
+              children: [
+                TaskPath(),
+                ParentTaskItem(),
+                TasksList(),
+              ],
+            ),
           ),
           drawer: SideMenu(),
           //floatingActionButton: AddButton(),

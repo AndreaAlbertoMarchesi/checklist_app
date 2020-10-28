@@ -1,6 +1,6 @@
 import 'package:checklist_app/model/AppState.dart';
 import 'package:checklist_app/model/Task.dart';
-import 'package:checklist_app/services/Database.dart';
+import 'package:checklist_app/view/home/ShareDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:vibration/vibration.dart';
@@ -24,21 +24,22 @@ class TaskItemState extends State<TaskItem> {
     final appState = context.watch<AppState>();
     return InkWell(
         child: SwipeTo(
-          swipeDirection: SwipeDirection.swipeToLeft,
-          endOffset: Offset(-0.6, 0.0),
-          animationDuration: const Duration(milliseconds: 300),
-          iconData: Icons.delete_outline,
-          iconColor: Colors.red,
-          callBack: () {
-            print('Callback from Swipe To Left');
-            Vibration.vibrate(duration: 100);
-            deleteDialog(appState);
-          },
           child: Card(
             color: getColor(appState.selectedListOfTasks),
             margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: getCardContent(widget.task),
           ),
+          onLeftSwipe: (){
+            print('Callback from Swipe To Left');
+            Vibration.vibrate(duration: 100);
+            deleteDialog(appState);
+          },
+          onRightSwipe: (){
+            shareDialog();
+          },
+          iconOnLeftSwipe: Icons.delete_outline,
+          iconColor: Colors.deepPurple[600],
+          iconOnRightSwipe: Icons.share_outlined,
         ),
         onTap: () {
           appState.openTask(widget.task);
@@ -87,6 +88,12 @@ class TaskItemState extends State<TaskItem> {
           )
         ],
       ),
+    );
+  }
+  void shareDialog(){
+    showDialog(
+      context: context,
+      child: ShareDialog(widget.task),
     );
   }
 }
